@@ -18,14 +18,14 @@ func main() {
 
   // Handler for asynchronous events.
   fn := func(msg proto.Message) {
-		fmt.Println(msg)
-	}
+    fmt.Println(msg)
+  }
 
   // Create the transport.
   transport := NewTransportTCP(time.Second)
 
   // Config and start the client.
-	c := Client[*TransportTCP]{
+  c := Client[*TransportTCP]{
     Transport:    transport,
     Live:         false,
     ClientID:     ctraderClientID,
@@ -38,14 +38,14 @@ func main() {
 
   // Authenticate the account.
   if _, err = c.AccountAuth(context.Background(), ctraderAccountID, ctraderToken); err != nil {
-		panic(err)
-	}
+    panic(err)
+  }
 
   // From this point on you can use the API.
   resp, err := c.SymbolList(context.Background(), ctraderAccountID)
-	if err != nil {
-		panic(err)
-	}
+  if err != nil {
+    panic(err)
+  }
   fmt.Println(resp)
 }
 ```
