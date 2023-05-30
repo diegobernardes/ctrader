@@ -10,10 +10,16 @@ configure:
     && git config branch.main.mergeoptions "--ff-only"
 
 go-test:
+  ARG INTEGRATION_TEST="true"
   FROM +go-base
   RUN go install github.com/mfridman/tparse@v0.12.1
-  RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
-    go test -tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
+  IF [ "$INTEGRATION_TEST" = "true" ]
+    RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
+      go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
+  ELSE
+    RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
+  END
+  
 
 go-build:
   FROM +go-base
@@ -29,7 +35,7 @@ go-mod-linter:
   FROM $GO_IMAGE
   WORKDIR $WORKDIR
   COPY . .
-  RUN --ssh git checkout Earthfile \
+  RUN git checkout Earthfile \
     && go mod tidy \
     && git add . \
     && git diff --cached --exit-code
