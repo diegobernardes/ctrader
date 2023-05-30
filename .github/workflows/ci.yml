@@ -1,0 +1,50 @@
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+
+name: CI
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    container:
+      image: earthly/earthly:latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        target:
+          [
+            go-build,
+            go-linter,
+            go-mod-linter,
+            compile-proto
+          ]
+        include:
+          - target: go-test
+            flags: --INTEGRATION_TEST="false"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Exec ${{ matrix.target }}
+        env:
+          FORCE_COLOR: 1
+        run: earthly +${{ matrix.target }} ${{ matrix.flags }}
+
+      - name: Ensure 'earthly +compile-proto' changes are committed
+        if: matrix.target == 'compile-proto'
+        run: |
+          git config --global --add safe.directory /__w/ctrader/ctrader
+          git add .
+          git diff --cached --exit-code
+
+  result:
+    name: Result
+    runs-on: ubuntu-latest
+    needs: [quality]
+    steps:
+      - name: Success
+        run: 'true'
