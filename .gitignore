@@ -1,0 +1,7 @@
+# Editor.
+/.vscode
+
+# Local files.
+/.envrc
+/tmp
+.DS_Store
