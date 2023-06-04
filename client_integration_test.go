@@ -19,10 +19,10 @@ import (
 
 func TestClientIntegration(t *testing.T) {
 	c := &Client{
-		Logger:   slog.New(slog.NewTextHandler(os.Stdout, nil)),
-		ClientID: os.Getenv("CTRADER_CLIENT_ID"),
-		Secret:   os.Getenv("CTRADER_SECRET"),
-		Deadline: time.Second,
+		Logger:              slog.New(slog.NewTextHandler(os.Stdout, nil)),
+		ApplicationClientID: os.Getenv("CTRADER_CLIENT_ID"),
+		ApplicationSecret:   os.Getenv("CTRADER_SECRET"),
+		Deadline:            time.Second,
 	}
 
 	ctraderAccountIDRaw := os.Getenv("CTRADER_ACCOUNT_ID")
