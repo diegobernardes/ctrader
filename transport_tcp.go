@@ -12,9 +12,8 @@ import (
 	"time"
 )
 
-type TransportTCP struct {
-	Deadline time.Duration
-
+type transportTCP struct {
+	deadline       time.Duration
 	conn           *tls.Conn
 	reader         io.Reader
 	sendMutex      sync.Mutex
@@ -25,7 +24,7 @@ type TransportTCP struct {
 }
 
 // start should only be used after setHandlerMessage and setHandlerError functions are called.
-func (t *TransportTCP) start(address string) error {
+func (t *transportTCP) start(address string) error {
 	conn, err := tls.Dial("tcp", address, nil)
 	if err != nil {
 		return fmt.Errorf("tls dial failed: %w", err)
@@ -36,7 +35,7 @@ func (t *TransportTCP) start(address string) error {
 	return nil
 }
 
-func (t *TransportTCP) stop() error {
+func (t *transportTCP) stop() error {
 	t.stopSignal.Store(true)
 	t.wg.Wait()
 	if err := t.conn.Close(); err != nil {
@@ -45,7 +44,7 @@ func (t *TransportTCP) stop() error {
 	return nil
 }
 
-func (t *TransportTCP) send(payload []byte) error {
+func (t *transportTCP) send(payload []byte) error {
 	t.sendMutex.Lock()
 	defer t.sendMutex.Unlock()
 
@@ -53,7 +52,7 @@ func (t *TransportTCP) send(payload []byte) error {
 	arr := make([]byte, 4)
 	binary.BigEndian.PutUint32(arr, uint32(len(payload)))
 
-	if err := t.conn.SetWriteDeadline(time.Now().Add(t.Deadline)); err != nil {
+	if err := t.conn.SetWriteDeadline(time.Now().Add(t.deadline)); err != nil {
 		return fmt.Errorf("failed to set the write deadline into the connection: %w", err)
 	}
 	written, err := t.conn.Write(append(arr, payload...))
@@ -67,7 +66,7 @@ func (t *TransportTCP) send(payload []byte) error {
 	return nil
 }
 
-func (t *TransportTCP) receive() {
+func (t *transportTCP) receive() {
 	t.wg.Add(1)
 	go func() {
 		defer t.wg.Done()
@@ -113,7 +112,7 @@ func (t *TransportTCP) receive() {
 	}()
 }
 
-func (t *TransportTCP) setHandler(handlerMessage func([]byte), handlerError func(error)) {
+func (t *transportTCP) setHandler(handlerMessage func([]byte), handlerError func(error)) {
 	t.handlerMessage = handlerMessage
 	t.handlerError = handlerError
 }

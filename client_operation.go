@@ -9,7 +9,7 @@ import (
 	"github.com/diegobernardes/ctrader/openapi"
 )
 
-func (c *Client[T]) AccountAuth(
+func (c *Client) AccountAuth(
 	ctx context.Context, accountIDRaw int, token string,
 ) (*openapi.ProtoOAAccountAuthRes, error) {
 	accountID := int64(accountIDRaw)
@@ -31,7 +31,7 @@ func (c *Client[T]) AccountAuth(
 	}
 }
 
-func (c *Client[T]) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.ProtoOASymbolsListRes, error) {
+func (c *Client) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.ProtoOASymbolsListRes, error) {
 	accountID := int64(accountIDRaw)
 	req := &openapi.ProtoOASymbolsListReq{
 		CtidTraderAccountId: &accountID,
@@ -51,7 +51,7 @@ func (c *Client[T]) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.
 }
 
 // ProtoOaSpotEvent
-func (c *Client[T]) Subscribe(
+func (c *Client) Subscribe(
 	ctx context.Context, accountIDRaw int, symbols []int64,
 ) (*openapi.ProtoOASubscribeSpotsRes, error) {
 	accountID := int64(accountIDRaw)
@@ -73,7 +73,7 @@ func (c *Client[T]) Subscribe(
 	}
 }
 
-func (c *Client[T]) applicationAuthorization(ctx context.Context) error {
+func (c *Client) applicationAuthorization(ctx context.Context) error {
 	req := &openapi.ProtoOAApplicationAuthReq{
 		ClientId:     &c.ClientID,
 		ClientSecret: &c.Secret,
@@ -92,7 +92,7 @@ func (c *Client[T]) applicationAuthorization(ctx context.Context) error {
 	}
 }
 
-func (c *Client[T]) keepalive() {
+func (c *Client) keepalive() {
 	c.wg.Add(1)
 	go func() {
 		ticker := time.NewTicker(10 * time.Second)

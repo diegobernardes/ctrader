@@ -15,7 +15,7 @@ import (
 func TestClientKeepAlive(t *testing.T) {
 	t.Parallel()
 	mc := mockClient{t: t}
-	c := Client[*mockClient]{Transport: &mc}
+	c := Client{transport: &mc}
 	c.keepalive()
 	time.Sleep(21 * time.Second)
 	require.Equal(t, mc.count.Load(), int64(2))

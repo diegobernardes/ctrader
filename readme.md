@@ -21,16 +21,14 @@ func main() {
     fmt.Println(msg)
   }
 
-  // Create the transport.
-  transport := NewTransportTCP(time.Second)
-
   // Config and start the client.
-  c := Client[*TransportTCP]{
+  c := Client{
     Transport:    transport,
     Live:         false,
     ClientID:     ctraderClientID,
     Secret:       ctraderSecret,
     HandlerEvent: fn,
+    Deadline:     time.Second,
   }
   if err := c.Start(); err != nil {
     panic(err)
