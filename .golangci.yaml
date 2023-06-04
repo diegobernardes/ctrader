@@ -1,0 +1,128 @@
+run:
+  build-tags:
+    - integration
+
+  skip-dirs:
+    - openapi
+    - tmp
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - asciicheck
+    - contextcheck
+    - decorder
+    - durationcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forcetypeassert
+    - gci
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gochecknoinits
+    - gocritic
+    - godot
+    - gofmt
+    - gofumpt
+    - gosec
+    - ireturn
+    - lll
+    - nilerr
+    - nolintlint
+    - prealloc
+    - predeclared
+    - reassign
+    - revive
+    - stylecheck
+    - tagliatelle
+    - tenv
+    - testableexamples
+    - testableexamples
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - wastedassign
+    - wrapcheck
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    check-shadowing: true
+    settings:
+      shadow:
+        strict: true
+    enable-all: true
+    disable:
+      - fieldalignment
+
+  decorder:
+    disable-dec-order-check: false
+    disable-init-func-first-check: false
+
+  exhaustive:
+    check:
+      - switch
+      - map
+    default-signifies-exhaustive: true
+
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/diegobernardes/ctrader)
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+      - opinionated
+
+  godot:
+    scope: all
+    capital: true
+
+  gofmt:
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
+
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - protoreflect.ProtoMessage
+
+  nolintlint:
+    require-explanation: true
+    require-specific: true
+
+  prealloc:
+    simple: false
+    for-loops: true
+
+  reassign:
+    patterns:
+      - ".*"
+
+  stylecheck:
+    checks: ["all"]
+
+  tenv:
+    all: true
