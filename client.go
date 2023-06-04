@@ -2,6 +2,7 @@ package ctrader
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"sync/atomic"
@@ -22,10 +23,8 @@ type clientTransport interface {
 }
 
 type Client struct {
-	Live         bool
-	ClientID     string
-	Secret       string
-	Logger       *slog.Logger
+	ApplicationClientID string
+	ApplicationSecret   string
 	HandlerEvent func(proto.Message)
 	Deadline     time.Duration
 
@@ -67,6 +66,104 @@ func (c *Client) Stop() error {
 	return nil
 }
 
+func (c *Client) AccountAuth(
+	ctx context.Context, accountIDRaw int, token string,
+) (*openapi.ProtoOAAccountAuthRes, error) {
+	accountID := int64(accountIDRaw)
+	req := &openapi.ProtoOAAccountAuthReq{
+		AccessToken:         &token,
+		CtidTraderAccountId: &accountID,
+	}
+	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_ACCOUNT_AUTH_REQ), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute the request: %w", err)
+	}
+	switch v := resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return nil, errors.New("failed authenticate the account")
+	case *openapi.ProtoOAAccountAuthRes:
+		return v, nil
+	default:
+		return nil, errors.New("unexpected response type")
+	}
+}
+
+func (c *Client) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.ProtoOASymbolsListRes, error) {
+	accountID := int64(accountIDRaw)
+	req := &openapi.ProtoOASymbolsListReq{
+		CtidTraderAccountId: &accountID,
+	}
+	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_SYMBOLS_LIST_REQ), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute the request: %w", err)
+	}
+	switch v := resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return nil, errors.New("failed to fetch the symbol list")
+	case *openapi.ProtoOASymbolsListRes:
+		return v, nil
+	default:
+		return nil, errors.New("unexpected response type")
+	}
+}
+
+func (c *Client) Subscribe(
+	ctx context.Context, accountIDRaw int, symbols []int64,
+) (*openapi.ProtoOASubscribeSpotsRes, error) {
+	accountID := int64(accountIDRaw)
+	req := &openapi.ProtoOASubscribeSpotsReq{
+		CtidTraderAccountId: &accountID,
+		SymbolId:            symbols,
+	}
+	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_SUBSCRIBE_SPOTS_REQ), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute the request: %w", err)
+	}
+	switch v := resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return nil, errors.New("failed to subscribe")
+	case *openapi.ProtoOASubscribeSpotsRes:
+		return v, nil
+	default:
+		return nil, errors.New("unexpected response type")
+	}
+}
+
+func (c *Client) Version(ctx context.Context) (*openapi.ProtoOAVersionRes, error) {
+	req := &openapi.ProtoOAVersionReq{}
+	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_VERSION_REQ), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute the request: %w", err)
+	}
+	switch v := resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return nil, errors.New("failed to fetch the version")
+	case *openapi.ProtoOAVersionRes:
+		return v, nil
+	default:
+		return nil, errors.New("unexpected response type")
+	}
+}
+
+func (c *Client) applicationAuthorization(ctx context.Context) error {
+	req := &openapi.ProtoOAApplicationAuthReq{
+		ClientId:     &c.ApplicationClientID,
+		ClientSecret: &c.ApplicationSecret,
+	}
+	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_APPLICATION_AUTH_REQ), true)
+	if err != nil {
+		return fmt.Errorf("failed to send the message: %w", err)
+	}
+	switch resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return errors.New("failed to authorize an application")
+	case *openapi.ProtoOAApplicationAuthRes:
+		return nil
+	default:
+		return errors.New("unexpected response type")
+	}
+}
+
 func (c *Client) handlerMessage(payload []byte) {
 	var msg openapi.ProtoMessage
 	if err := proto.Unmarshal(payload, &msg); err != nil {
@@ -94,6 +191,30 @@ func (c *Client) handlerMessage(payload []byte) {
 		}
 		chanResponse <- &msg
 	}
+}
+
+func (c *Client) keepalive() {
+	c.wg.Add(1)
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer func() {
+			ticker.Stop()
+			c.wg.Done()
+		}()
+		for range ticker.C {
+			if c.stopSignal.Load() {
+				return
+			}
+			payloadTypeRaw := openapi.ProtoPayloadType_HEARTBEAT_EVENT
+			payloadType := uint32(payloadTypeRaw)
+			req := openapi.ProtoMessage{
+				PayloadType: &payloadType,
+			}
+			if _, err := c.send(context.Background(), &req, int32(payloadTypeRaw), false); err != nil {
+				c.handlerError(fmt.Errorf("failed to send the heartbeat event: %w", err))
+			}
+		}
+	}()
 }
 
 func (c *Client) handlerError(err error) {
