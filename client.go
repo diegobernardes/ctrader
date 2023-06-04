@@ -220,6 +220,7 @@ func (c *Client) keepalive() {
 }
 
 func (c *Client) handlerError(err error) {
+	c.Logger.Error("Asynchronous error", "error", err.Error())
 	for {
 		if err = c.Stop(); err != nil {
 			c.Logger.Error("failed to stop the client", "error", err.Error())
@@ -264,8 +265,8 @@ func (c *Client) send(
 		defer delete(c.requestRegistry, id)
 	}
 
-	if err := c.transport.send(payload); err != nil {
-		return nil, fmt.Errorf("failed to send the message: %w", err)
+	if errSend := c.transport.send(payload); errSend != nil {
+		return nil, fmt.Errorf("failed to send the message: %w", errSend)
 	}
 
 	if !hasResponse {
