@@ -25,7 +25,10 @@ type transportTCP struct {
 
 // start should only be used after setHandlerMessage and setHandlerError functions are called.
 func (t *transportTCP) start(address string) error {
-	conn, err := tls.Dial("tcp", address, nil)
+	tlsDialer := net.Dialer{
+		Deadline: time.Now().Add(t.deadline),
+	}
+	conn, err := tls.DialWithDialer(&tlsDialer, "tcp", address, nil)
 	if err != nil {
 		return fmt.Errorf("tls dial failed: %w", err)
 	}
