@@ -40,8 +40,8 @@ func TestClientIntegration(t *testing.T) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		resp, err := c.SymbolList(context.Background(), ctraderAccountID)
-		require.NoError(t, err)
+		resp, errSymbol := c.SymbolList(context.Background(), ctraderAccountID)
+		require.NoError(t, errSymbol)
 		_, ok := lo.Find(resp.Symbol, func(s *openapi.ProtoOALightSymbol) bool {
 			return *s.SymbolName == "EURUSD"
 		})

@@ -12,18 +12,6 @@ import (
 	"github.com/diegobernardes/ctrader/openapi"
 )
 
-func TestClientKeepAlive(t *testing.T) {
-	t.Parallel()
-	mc := mockClient{t: t}
-	c := Client{transport: &mc}
-	c.keepalive()
-	time.Sleep(21 * time.Second)
-	require.Equal(t, mc.count.Load(), int64(2))
-	c.stopSignal.Store(true)
-	time.Sleep(11 * time.Second)
-	require.Equal(t, mc.count.Load(), int64(2))
-}
-
 type mockClient struct {
 	mock.Mock
 	clientTransport
@@ -37,4 +25,16 @@ func (m *mockClient) send(payload []byte) error {
 	require.Equal(m.t, *msg.PayloadType, uint32(openapi.ProtoPayloadType_HEARTBEAT_EVENT))
 	m.count.Add(1)
 	return nil
+}
+
+func TestClientKeepAlive(t *testing.T) {
+	t.Parallel()
+	mc := mockClient{t: t}
+	c := Client{transport: &mc}
+	c.keepalive()
+	time.Sleep(21 * time.Second)
+	require.Equal(t, mc.count.Load(), int64(2))
+	c.stopSignal.Store(true)
+	time.Sleep(11 * time.Second)
+	require.Equal(t, mc.count.Load(), int64(2))
 }
