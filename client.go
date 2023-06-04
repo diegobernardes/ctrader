@@ -21,29 +21,31 @@ type clientTransport interface {
 	setHandler(func([]byte), func(error))
 }
 
-type Client[T clientTransport] struct {
+type Client struct {
 	Live         bool
 	ClientID     string
 	Secret       string
-	Transport    T
 	Logger       *slog.Logger
 	HandlerEvent func(proto.Message)
+	Deadline     time.Duration
 
+	transport            clientTransport
 	stopSignal           atomic.Bool
 	wg                   sync.WaitGroup
 	requestRegistry      map[string]chan *openapi.ProtoMessage
 	requestRegistryMutex sync.Mutex
 }
 
-func (c *Client[T]) Start() error {
+func (c *Client) Start() error {
+	c.transport = &transportTCP{deadline: c.Deadline}
 	var address string
 	if c.Live {
 		address = "live.ctraderapi.com:5035"
 	} else {
 		address = "demo.ctraderapi.com:5035"
 	}
-	c.Transport.setHandler(c.handlerMessage, c.handlerError)
-	if err := c.Transport.start(address); err != nil {
+	c.transport.setHandler(c.handlerMessage, c.handlerError)
+	if err := c.transport.start(address); err != nil {
 		return fmt.Errorf("failed to open the transport: %w", err)
 	}
 	c.requestRegistry = make(map[string]chan *openapi.ProtoMessage)
@@ -56,16 +58,16 @@ func (c *Client[T]) Start() error {
 	return nil
 }
 
-func (c *Client[T]) Stop() error {
+func (c *Client) Stop() error {
 	c.stopSignal.Store(true)
 	c.wg.Wait()
-	if err := c.Transport.stop(); err != nil {
+	if err := c.transport.stop(); err != nil {
 		return fmt.Errorf("failed to close the transport: %w", err)
 	}
 	return nil
 }
 
-func (c *Client[T]) handlerMessage(payload []byte) {
+func (c *Client) handlerMessage(payload []byte) {
 	var msg openapi.ProtoMessage
 	if err := proto.Unmarshal(payload, &msg); err != nil {
 		c.Logger.Error("failed to unmarshal message", "error", err)
@@ -94,7 +96,7 @@ func (c *Client[T]) handlerMessage(payload []byte) {
 	}
 }
 
-func (c *Client[T]) handlerError(err error) {
+func (c *Client) handlerError(err error) {
 	for {
 		if err := c.Stop(); err != nil {
 			c.Logger.Error("failed to stop the client", "error", err.Error())
@@ -110,7 +112,7 @@ func (c *Client[T]) handlerError(err error) {
 	}
 }
 
-func (c *Client[T]) send(
+func (c *Client) send(
 	ctx context.Context, req proto.Message, reqTypeRaw int32, hasResponse bool,
 ) (proto.Message, error) {
 	payloadBase, err := proto.Marshal(req)
@@ -139,7 +141,7 @@ func (c *Client[T]) send(
 		defer delete(c.requestRegistry, id)
 	}
 
-	if err := c.Transport.send(payload); err != nil {
+	if err := c.transport.send(payload); err != nil {
 		return nil, fmt.Errorf("failed to send the message: %w", err)
 	}
 
@@ -162,7 +164,7 @@ func (c *Client[T]) send(
 	}
 }
 
-func (c *Client[T]) responseMapping(payloadType uint32) (proto.Message, error) {
+func (c *Client) responseMapping(payloadType uint32) (proto.Message, error) {
 	var response proto.Message
 	switch payloadType {
 	case uint32(openapi.ProtoPayloadType_PROTO_MESSAGE):
