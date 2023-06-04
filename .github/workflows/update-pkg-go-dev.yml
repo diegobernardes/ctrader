@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - 'main'
+
+name: Update https://pkg.go.dev/github.com/diegobernardes/ctrader
+jobs:
+  runner:
+    name: Runner
+    runs-on: ubuntu-latest
+    container:
+      image: earthly/earthly:latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Exec +update-pkg-go-dev
+        env:
+          FORCE_COLOR: 1
+        run: earthly +update-pkg-go-dev
