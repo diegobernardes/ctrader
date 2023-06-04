@@ -25,8 +25,10 @@ type clientTransport interface {
 type Client struct {
 	ApplicationClientID string
 	ApplicationSecret   string
-	HandlerEvent func(proto.Message)
-	Deadline     time.Duration
+	HandlerEvent        func(proto.Message)
+	Deadline            time.Duration
+	Logger              *slog.Logger
+	Live                bool
 
 	transport            clientTransport
 	stopSignal           atomic.Bool
