@@ -47,6 +47,10 @@ go-base:
   COPY go.mod go.sum *.go .
   RUN go mod download
 
+update-pkg-go-dev:
+  FROM $GO_IMAGE
+  RUN curl https://proxy.golang.org/github.com/diegobernardes/ctrader/@v/main.info
+
 # compile-proto is used to compile cTrader Open API protobuf files. The build is fixed at a commit but it should be 
 # changed to '--depth 1 --branch {TAG}' once a new tag is avaiable that contains the go package configuration at the 
 # proto files.
