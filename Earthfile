@@ -27,8 +27,11 @@ go-build:
 go-linter:
   FROM +go-base
   WORKDIR $WORKDIR
-  RUN go install golang.org/x/vuln/cmd/govulncheck@latest
+  RUN go install golang.org/x/vuln/cmd/govulncheck@latest \
+    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+  COPY .golangci.yaml .
   RUN govulncheck ./...
+  RUN golangci-lint run ./...
 
 go-mod-linter:
   FROM $GO_IMAGE

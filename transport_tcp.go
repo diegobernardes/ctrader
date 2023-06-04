@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"crypto/tls"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -86,7 +87,8 @@ func (t *transportTCP) receive() {
 			}
 
 			if _, err := io.ReadFull(t.reader, bufferLength); err != nil {
-				if nerr, ok := err.(net.Error); ok && nerr.Timeout() {
+				var errorNet net.Error
+				if errors.As(err, &errorNet) && errorNet.Timeout() {
 					continue
 				}
 				t.handlerError(fmt.Errorf("failed to read: %w", err))
@@ -104,7 +106,8 @@ func (t *transportTCP) receive() {
 				return
 			}
 			if _, err := io.ReadFull(t.reader, bufferPayload); err != nil {
-				if nerr, ok := err.(net.Error); ok && nerr.Timeout() {
+				var errorNet net.Error
+				if errors.As(err, &errorNet) && errorNet.Timeout() {
 					continue
 				}
 				t.handlerError(fmt.Errorf("failed to read: %w", err))

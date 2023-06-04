@@ -79,7 +79,7 @@ func (c *Client) handlerMessage(payload []byte) {
 			c.Logger.Error("unknow message type", "error", err)
 			return
 		}
-		if err := proto.Unmarshal(msg.Payload, message); err != nil {
+		if err = proto.Unmarshal(msg.Payload, message); err != nil {
 			c.Logger.Error("failed to unmarshal payload", "error", err)
 			return
 		}
@@ -98,12 +98,12 @@ func (c *Client) handlerMessage(payload []byte) {
 
 func (c *Client) handlerError(err error) {
 	for {
-		if err := c.Stop(); err != nil {
+		if err = c.Stop(); err != nil {
 			c.Logger.Error("failed to stop the client", "error", err.Error())
 			time.Sleep(time.Second)
 			continue
 		}
-		if err := c.Start(); err != nil {
+		if err = c.Start(); err != nil {
 			c.Logger.Error("failed to start the client", "error", err.Error())
 			time.Sleep(time.Second)
 			continue
@@ -153,11 +153,11 @@ func (c *Client) send(
 	case <-ctx.Done():
 		return nil, fmt.Errorf("context error: %w", ctx.Err())
 	case messageBase := <-chanResponse:
-		message, err := c.responseMapping(*messageBase.PayloadType)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get the response type: %w", err)
+		message, errMessage := c.responseMapping(*messageBase.PayloadType)
+		if errMessage != nil {
+			return nil, fmt.Errorf("failed to get the response type: %w", errMessage)
 		}
-		if err := proto.Unmarshal(messageBase.Payload, message); err != nil {
+		if err = proto.Unmarshal(messageBase.Payload, message); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal the response: %w", err)
 		}
 		return message, nil
