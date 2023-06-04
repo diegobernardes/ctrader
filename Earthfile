@@ -19,7 +19,6 @@ go-test:
   ELSE
     RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
   END
-  
 
 go-build:
   FROM +go-base
