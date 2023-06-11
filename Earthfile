@@ -53,10 +53,8 @@ update-pkg-go-dev:
   FROM $GO_IMAGE
   RUN curl https://proxy.golang.org/github.com/diegobernardes/ctrader/@v/main.info
 
-# compile-proto is used to compile cTrader Open API protobuf files. The build is fixed at a commit but it should be 
-# changed to '--depth 1 --branch {TAG}' once a new tag is avaiable that contains the go package configuration at the 
-# proto files.
-# It's recommended to execute 'go mod tidy' after this command.
+# compile-proto is used to compile cTrader Open API protobuf files. In case the 'protoc-gen-go' version changes, it's
+# recommended to run 'go mod tidy'.
 compile-proto:
   LOCALLY 
   RUN rm -rf openapi
@@ -65,9 +63,8 @@ compile-proto:
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
     && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.30.0
-  RUN git clone https://github.com/spotware/openapi-proto-messages.git \
+  RUN git clone --depth 1 --branch 86 https://github.com/spotware/openapi-proto-messages.git \
     && cd openapi-proto-messages \
-    && git checkout e60d8eab8863f81d8e69012c0165cba6548385e9 \
     && protoc --go_out=. --go_opt=paths=source_relative *.proto \
     && find . ! \( -name '*.go' \) -delete
   SAVE ARTIFACT openapi-proto-messages AS LOCAL openapi
