@@ -27,8 +27,8 @@ type ProtoOAApplicationAuthReq struct {
 	unknownFields protoimpl.UnknownFields
 
 	PayloadType  *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2100" json:"payloadType,omitempty"`
-	ClientId     *string             `protobuf:"bytes,2,req,name=clientId" json:"clientId,omitempty"`         //The unique Client ID provided during the registration.
-	ClientSecret *string             `protobuf:"bytes,3,req,name=clientSecret" json:"clientSecret,omitempty"` //The unique Client Secret provided during the registration.
+	ClientId     *string             `protobuf:"bytes,2,req,name=clientId" json:"clientId,omitempty"`         // The unique Client ID provided during the registration.
+	ClientSecret *string             `protobuf:"bytes,3,req,name=clientSecret" json:"clientSecret,omitempty"` // The unique Client Secret provided during the registration.
 }
 
 // Default values for ProtoOAApplicationAuthReq fields.
@@ -279,7 +279,7 @@ type ProtoOAErrorRes struct {
 	unknownFields protoimpl.UnknownFields
 
 	PayloadType             *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2142" json:"payloadType,omitempty"`
-	CtidTraderAccountId     *int64              `protobuf:"varint,2,opt,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"`         //The unique identifier of the trader's account in cTrader platform.
+	CtidTraderAccountId     *int64              `protobuf:"varint,2,opt,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"`         // The unique identifier of the trader's account in cTrader platform.
 	ErrorCode               *string             `protobuf:"bytes,3,req,name=errorCode" json:"errorCode,omitempty"`                              // The name of the ProtoErrorCode or the other custom ErrorCodes (e.g. ProtoCHErrorCode).
 	Description             *string             `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`                          // The error description.
 	MaintenanceEndTimestamp *int64              `protobuf:"varint,5,opt,name=maintenanceEndTimestamp" json:"maintenanceEndTimestamp,omitempty"` // The timestamp in seconds when the current maintenance session will be ended.
@@ -1895,7 +1895,7 @@ func (x *ProtoOASymbolByIdRes) GetArchivedSymbol() []*ProtoOAArchivedSymbol {
 	return nil
 }
 
-// * Request for getting a conversion chain between two assets that consists of several symbols. Use when no direct quote is available
+// * Request for getting a conversion chain between two assets that consists of several symbols. Use when no direct quote is available.
 type ProtoOASymbolsForConversionReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -6134,6 +6134,460 @@ func (x *ProtoOADealListByPositionIdRes) GetHasMore() bool {
 	return false
 }
 
+// * Request for getting Order and its related Deals.
+type ProtoOAOrderDetailsReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2181" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64              `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	OrderId             *int64              `protobuf:"varint,3,req,name=orderId" json:"orderId,omitempty"`                         // The unique ID of the Order.
+}
+
+// Default values for ProtoOAOrderDetailsReq fields.
+const (
+	Default_ProtoOAOrderDetailsReq_PayloadType = ProtoOAPayloadType_PROTO_OA_ORDER_DETAILS_REQ
+)
+
+func (x *ProtoOAOrderDetailsReq) Reset() {
+	*x = ProtoOAOrderDetailsReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[81]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOAOrderDetailsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOAOrderDetailsReq) ProtoMessage() {}
+
+func (x *ProtoOAOrderDetailsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[81]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOAOrderDetailsReq.ProtoReflect.Descriptor instead.
+func (*ProtoOAOrderDetailsReq) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{81}
+}
+
+func (x *ProtoOAOrderDetailsReq) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOAOrderDetailsReq_PayloadType
+}
+
+func (x *ProtoOAOrderDetailsReq) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderDetailsReq) GetOrderId() int64 {
+	if x != nil && x.OrderId != nil {
+		return *x.OrderId
+	}
+	return 0
+}
+
+// * Response to the ProtoOAOrderDetailsReq request.
+type ProtoOAOrderDetailsRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2182" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64              `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	Order               *ProtoOAOrder       `protobuf:"bytes,3,req,name=order" json:"order,omitempty"`                              // Order details.
+	Deal                []*ProtoOADeal      `protobuf:"bytes,4,rep,name=deal" json:"deal,omitempty"`                                // All Deals created by filling the specified Order.
+}
+
+// Default values for ProtoOAOrderDetailsRes fields.
+const (
+	Default_ProtoOAOrderDetailsRes_PayloadType = ProtoOAPayloadType_PROTO_OA_ORDER_DETAILS_RES
+)
+
+func (x *ProtoOAOrderDetailsRes) Reset() {
+	*x = ProtoOAOrderDetailsRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[82]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOAOrderDetailsRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOAOrderDetailsRes) ProtoMessage() {}
+
+func (x *ProtoOAOrderDetailsRes) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[82]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOAOrderDetailsRes.ProtoReflect.Descriptor instead.
+func (*ProtoOAOrderDetailsRes) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *ProtoOAOrderDetailsRes) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOAOrderDetailsRes_PayloadType
+}
+
+func (x *ProtoOAOrderDetailsRes) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderDetailsRes) GetOrder() *ProtoOAOrder {
+	if x != nil {
+		return x.Order
+	}
+	return nil
+}
+
+func (x *ProtoOAOrderDetailsRes) GetDeal() []*ProtoOADeal {
+	if x != nil {
+		return x.Deal
+	}
+	return nil
+}
+
+// * Request for retrieving Orders related to a Position by using Position ID. Filtered by utcLastUpdateTimestamp.
+type ProtoOAOrderListByPositionIdReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2183" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64              `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	PositionId          *int64              `protobuf:"varint,3,req,name=positionId" json:"positionId,omitempty"`                   // The unique ID of the Position.
+	FromTimestamp       *int64              `protobuf:"varint,4,req,name=fromTimestamp" json:"fromTimestamp,omitempty"`             // The UNIX time from which the search starts >=0 (1-1-1970). Validation: toTimestamp - fromTimestamp <= 604800000 (1 week). Search by utcLastUpdateTimestamp of the Order.
+	ToTimestamp         *int64              `protobuf:"varint,5,req,name=toTimestamp" json:"toTimestamp,omitempty"`                 // The UNIX time where to stop searching <= 2147483646000 (19-1-2038).  Search by utcLastUpdateTimestamp of the Order.
+}
+
+// Default values for ProtoOAOrderListByPositionIdReq fields.
+const (
+	Default_ProtoOAOrderListByPositionIdReq_PayloadType = ProtoOAPayloadType_PROTO_OA_ORDER_LIST_BY_POSITION_ID_REQ
+)
+
+func (x *ProtoOAOrderListByPositionIdReq) Reset() {
+	*x = ProtoOAOrderListByPositionIdReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[83]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOAOrderListByPositionIdReq) ProtoMessage() {}
+
+func (x *ProtoOAOrderListByPositionIdReq) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[83]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOAOrderListByPositionIdReq.ProtoReflect.Descriptor instead.
+func (*ProtoOAOrderListByPositionIdReq) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOAOrderListByPositionIdReq_PayloadType
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) GetPositionId() int64 {
+	if x != nil && x.PositionId != nil {
+		return *x.PositionId
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) GetFromTimestamp() int64 {
+	if x != nil && x.FromTimestamp != nil {
+		return *x.FromTimestamp
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderListByPositionIdReq) GetToTimestamp() int64 {
+	if x != nil && x.ToTimestamp != nil {
+		return *x.ToTimestamp
+	}
+	return 0
+}
+
+// * Response to ProtoOAOrderListByPositionIdReq request.
+type ProtoOAOrderListByPositionIdRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2184" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64              `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	Order               []*ProtoOAOrder     `protobuf:"bytes,3,rep,name=order" json:"order,omitempty"`                              // Orders related to the specified Position, sorted by utcLastUpdateTimestamp in descending order (newest first).
+	HasMore             *bool               `protobuf:"varint,4,req,name=hasMore" json:"hasMore,omitempty"`                         // If TRUE then the number of records by filter is larger than chunkSize, the response contains the number of records that is equal to chunkSize.
+}
+
+// Default values for ProtoOAOrderListByPositionIdRes fields.
+const (
+	Default_ProtoOAOrderListByPositionIdRes_PayloadType = ProtoOAPayloadType_PROTO_OA_ORDER_LIST_BY_POSITION_ID_RES
+)
+
+func (x *ProtoOAOrderListByPositionIdRes) Reset() {
+	*x = ProtoOAOrderListByPositionIdRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[84]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOAOrderListByPositionIdRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOAOrderListByPositionIdRes) ProtoMessage() {}
+
+func (x *ProtoOAOrderListByPositionIdRes) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[84]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOAOrderListByPositionIdRes.ProtoReflect.Descriptor instead.
+func (*ProtoOAOrderListByPositionIdRes) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *ProtoOAOrderListByPositionIdRes) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOAOrderListByPositionIdRes_PayloadType
+}
+
+func (x *ProtoOAOrderListByPositionIdRes) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOAOrderListByPositionIdRes) GetOrder() []*ProtoOAOrder {
+	if x != nil {
+		return x.Order
+	}
+	return nil
+}
+
+func (x *ProtoOAOrderListByPositionIdRes) GetHasMore() bool {
+	if x != nil && x.HasMore != nil {
+		return *x.HasMore
+	}
+	return false
+}
+
+// * Request for getting sets of Deals that were offset by a specific Deal and that are offsetting the Deal.
+type ProtoOADealOffsetListReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2185" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64              `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	DealId              *int64              `protobuf:"varint,3,req,name=dealId" json:"dealId,omitempty"`                           // The unique ID of the Deal.
+}
+
+// Default values for ProtoOADealOffsetListReq fields.
+const (
+	Default_ProtoOADealOffsetListReq_PayloadType = ProtoOAPayloadType_PROTO_OA_DEAL_OFFSET_LIST_REQ
+)
+
+func (x *ProtoOADealOffsetListReq) Reset() {
+	*x = ProtoOADealOffsetListReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[85]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOADealOffsetListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOADealOffsetListReq) ProtoMessage() {}
+
+func (x *ProtoOADealOffsetListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[85]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOADealOffsetListReq.ProtoReflect.Descriptor instead.
+func (*ProtoOADealOffsetListReq) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{85}
+}
+
+func (x *ProtoOADealOffsetListReq) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOADealOffsetListReq_PayloadType
+}
+
+func (x *ProtoOADealOffsetListReq) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOADealOffsetListReq) GetDealId() int64 {
+	if x != nil && x.DealId != nil {
+		return *x.DealId
+	}
+	return 0
+}
+
+// * Response for ProtoOADealOffsetListReq.
+type ProtoOADealOffsetListRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PayloadType         *ProtoOAPayloadType  `protobuf:"varint,1,opt,name=payloadType,enum=ProtoOAPayloadType,def=2186" json:"payloadType,omitempty"`
+	CtidTraderAccountId *int64               `protobuf:"varint,2,req,name=ctidTraderAccountId" json:"ctidTraderAccountId,omitempty"` // Unique identifier of the trader's account. Used to match responses to trader's accounts.
+	OffsetBy            []*ProtoOADealOffset `protobuf:"bytes,3,rep,name=offsetBy" json:"offsetBy,omitempty"`                        // Deals which closed the specified deal.
+	Offsetting          []*ProtoOADealOffset `protobuf:"bytes,4,rep,name=offsetting" json:"offsetting,omitempty"`                    // Deals which were closed by the specified deal.
+}
+
+// Default values for ProtoOADealOffsetListRes fields.
+const (
+	Default_ProtoOADealOffsetListRes_PayloadType = ProtoOAPayloadType_PROTO_OA_DEAL_OFFSET_LIST_RES
+)
+
+func (x *ProtoOADealOffsetListRes) Reset() {
+	*x = ProtoOADealOffsetListRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_OpenApiMessages_proto_msgTypes[86]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProtoOADealOffsetListRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoOADealOffsetListRes) ProtoMessage() {}
+
+func (x *ProtoOADealOffsetListRes) ProtoReflect() protoreflect.Message {
+	mi := &file_OpenApiMessages_proto_msgTypes[86]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtoOADealOffsetListRes.ProtoReflect.Descriptor instead.
+func (*ProtoOADealOffsetListRes) Descriptor() ([]byte, []int) {
+	return file_OpenApiMessages_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *ProtoOADealOffsetListRes) GetPayloadType() ProtoOAPayloadType {
+	if x != nil && x.PayloadType != nil {
+		return *x.PayloadType
+	}
+	return Default_ProtoOADealOffsetListRes_PayloadType
+}
+
+func (x *ProtoOADealOffsetListRes) GetCtidTraderAccountId() int64 {
+	if x != nil && x.CtidTraderAccountId != nil {
+		return *x.CtidTraderAccountId
+	}
+	return 0
+}
+
+func (x *ProtoOADealOffsetListRes) GetOffsetBy() []*ProtoOADealOffset {
+	if x != nil {
+		return x.OffsetBy
+	}
+	return nil
+}
+
+func (x *ProtoOADealOffsetListRes) GetOffsetting() []*ProtoOADealOffset {
+	if x != nil {
+		return x.Offsetting
+	}
+	return nil
+}
+
 var File_OpenApiMessages_proto protoreflect.FileDescriptor
 
 var file_OpenApiMessages_proto_rawDesc = []byte{
@@ -7325,12 +7779,100 @@ var file_OpenApiMessages_proto_rawDesc = []byte{
 	0x12, 0x20, 0x0a, 0x04, 0x64, 0x65, 0x61, 0x6c, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0c,
 	0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x44, 0x65, 0x61, 0x6c, 0x52, 0x04, 0x64, 0x65,
 	0x61, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x18, 0x04, 0x20,
-	0x02, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x42, 0x4c, 0x0a, 0x1f,
-	0x63, 0x6f, 0x6d, 0x2e, 0x78, 0x74, 0x72, 0x61, 0x64, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x6f, 0x70, 0x65, 0x6e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x42,
-	0x1a, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x4f, 0x70, 0x65, 0x6e, 0x41, 0x70,
-	0x69, 0x56, 0x32, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x50, 0x01, 0x5a, 0x08, 0x2f,
-	0x6f, 0x70, 0x65, 0x6e, 0x61, 0x70, 0x69, 0xa0, 0x01, 0x01,
+	0x02, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x22, 0xb7, 0x01, 0x0a,
+	0x16, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x52, 0x65, 0x71, 0x12, 0x51, 0x0a, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f,
+	0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70,
+	0x65, 0x3a, 0x1a, 0x50, 0x52, 0x4f, 0x54, 0x4f, 0x5f, 0x4f, 0x41, 0x5f, 0x4f, 0x52, 0x44, 0x45,
+	0x52, 0x5f, 0x44, 0x45, 0x54, 0x41, 0x49, 0x4c, 0x53, 0x5f, 0x52, 0x45, 0x51, 0x52, 0x0b, 0x70,
+	0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x74,
+	0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x02, 0x28, 0x03, 0x52, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61,
+	0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07,
+	0x6f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x02, 0x28, 0x03, 0x52, 0x07, 0x6f,
+	0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0xe4, 0x01, 0x0a, 0x16, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x4f, 0x41, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x65,
+	0x73, 0x12, 0x51, 0x0a, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41,
+	0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x3a, 0x1a, 0x50, 0x52, 0x4f,
+	0x54, 0x4f, 0x5f, 0x4f, 0x41, 0x5f, 0x4f, 0x52, 0x44, 0x45, 0x52, 0x5f, 0x44, 0x45, 0x54, 0x41,
+	0x49, 0x4c, 0x53, 0x5f, 0x52, 0x45, 0x53, 0x52, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64,
+	0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x02, 0x28,
+	0x03, 0x52, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x05, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x18,
+	0x03, 0x20, 0x02, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x4f,
+	0x72, 0x64, 0x65, 0x72, 0x52, 0x05, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x20, 0x0a, 0x04, 0x64,
+	0x65, 0x61, 0x6c, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x4f, 0x41, 0x44, 0x65, 0x61, 0x6c, 0x52, 0x04, 0x64, 0x65, 0x61, 0x6c, 0x22, 0x9a, 0x02,
+	0x0a, 0x1f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x4c, 0x69,
+	0x73, 0x74, 0x42, 0x79, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x52, 0x65,
+	0x71, 0x12, 0x5d, 0x0a, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41,
+	0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x3a, 0x26, 0x50, 0x52, 0x4f,
+	0x54, 0x4f, 0x5f, 0x4f, 0x41, 0x5f, 0x4f, 0x52, 0x44, 0x45, 0x52, 0x5f, 0x4c, 0x49, 0x53, 0x54,
+	0x5f, 0x42, 0x59, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x49, 0x44, 0x5f,
+	0x52, 0x45, 0x51, 0x52, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x30, 0x0a, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x02, 0x28, 0x03, 0x52, 0x13, 0x63,
+	0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x49, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x18, 0x03, 0x20, 0x02, 0x28, 0x03, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x66, 0x72, 0x6f, 0x6d, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x02, 0x28, 0x03, 0x52, 0x0d, 0x66, 0x72, 0x6f, 0x6d, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x20, 0x0a, 0x0b, 0x74, 0x6f, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x05, 0x20, 0x02, 0x28, 0x03, 0x52, 0x0b, 0x74,
+	0x6f, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0xf1, 0x01, 0x0a, 0x1f, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x42,
+	0x79, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x52, 0x65, 0x73, 0x12, 0x5d,
+	0x0a, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x50, 0x61, 0x79,
+	0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x3a, 0x26, 0x50, 0x52, 0x4f, 0x54, 0x4f, 0x5f,
+	0x4f, 0x41, 0x5f, 0x4f, 0x52, 0x44, 0x45, 0x52, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x5f, 0x42, 0x59,
+	0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x49, 0x44, 0x5f, 0x52, 0x45, 0x53,
+	0x52, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x12, 0x30, 0x0a,
+	0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x02, 0x28, 0x03, 0x52, 0x13, 0x63, 0x74, 0x69, 0x64,
+	0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12,
+	0x23, 0x0a, 0x05, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d,
+	0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x05, 0x6f,
+	0x72, 0x64, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x18,
+	0x04, 0x20, 0x02, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x22, 0xba,
+	0x01, 0x0a, 0x18, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x44, 0x65, 0x61, 0x6c, 0x4f, 0x66,
+	0x66, 0x73, 0x65, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x12, 0x54, 0x0a, 0x0b, 0x70,
+	0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x13, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61,
+	0x64, 0x54, 0x79, 0x70, 0x65, 0x3a, 0x1d, 0x50, 0x52, 0x4f, 0x54, 0x4f, 0x5f, 0x4f, 0x41, 0x5f,
+	0x44, 0x45, 0x41, 0x4c, 0x5f, 0x4f, 0x46, 0x46, 0x53, 0x45, 0x54, 0x5f, 0x4c, 0x49, 0x53, 0x54,
+	0x5f, 0x52, 0x45, 0x51, 0x52, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70,
+	0x65, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41,
+	0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x02, 0x28, 0x03, 0x52, 0x13,
+	0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x65, 0x61, 0x6c, 0x49, 0x64, 0x18, 0x03, 0x20,
+	0x02, 0x28, 0x03, 0x52, 0x06, 0x64, 0x65, 0x61, 0x6c, 0x49, 0x64, 0x22, 0x86, 0x02, 0x0a, 0x18,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x44, 0x65, 0x61, 0x6c, 0x4f, 0x66, 0x66, 0x73, 0x65,
+	0x74, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x12, 0x54, 0x0a, 0x0b, 0x70, 0x61, 0x79, 0x6c,
+	0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79,
+	0x70, 0x65, 0x3a, 0x1d, 0x50, 0x52, 0x4f, 0x54, 0x4f, 0x5f, 0x4f, 0x41, 0x5f, 0x44, 0x45, 0x41,
+	0x4c, 0x5f, 0x4f, 0x46, 0x46, 0x53, 0x45, 0x54, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x5f, 0x52, 0x45,
+	0x53, 0x52, 0x0b, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x79, 0x70, 0x65, 0x12, 0x30,
+	0x0a, 0x13, 0x63, 0x74, 0x69, 0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x02, 0x28, 0x03, 0x52, 0x13, 0x63, 0x74, 0x69,
+	0x64, 0x54, 0x72, 0x61, 0x64, 0x65, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64,
+	0x12, 0x2e, 0x0a, 0x08, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x42, 0x79, 0x18, 0x03, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x44, 0x65, 0x61, 0x6c,
+	0x4f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x52, 0x08, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x42, 0x79,
+	0x12, 0x32, 0x0a, 0x0a, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x04,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x4f, 0x41, 0x44, 0x65,
+	0x61, 0x6c, 0x4f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x52, 0x0a, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x42, 0x4c, 0x0a, 0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x78, 0x74, 0x72, 0x61,
+	0x64, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x6f, 0x70, 0x65,
+	0x6e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x42, 0x1a, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e,
+	0x65, 0x72, 0x4f, 0x70, 0x65, 0x6e, 0x41, 0x70, 0x69, 0x56, 0x32, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x73, 0x50, 0x01, 0x5a, 0x08, 0x2f, 0x6f, 0x70, 0x65, 0x6e, 0x61, 0x70, 0x69, 0xa0,
+	0x01, 0x01,
 }
 
 var (
@@ -7345,7 +7887,7 @@ func file_OpenApiMessages_proto_rawDescGZIP() []byte {
 	return file_OpenApiMessages_proto_rawDescData
 }
 
-var file_OpenApiMessages_proto_msgTypes = make([]protoimpl.MessageInfo, 81)
+var file_OpenApiMessages_proto_msgTypes = make([]protoimpl.MessageInfo, 87)
 var file_OpenApiMessages_proto_goTypes = []interface{}{
 	(*ProtoOAApplicationAuthReq)(nil),             // 0: ProtoOAApplicationAuthReq
 	(*ProtoOAApplicationAuthRes)(nil),             // 1: ProtoOAApplicationAuthRes
@@ -7428,169 +7970,187 @@ var file_OpenApiMessages_proto_goTypes = []interface{}{
 	(*ProtoOAGetDynamicLeverageByIDRes)(nil),      // 78: ProtoOAGetDynamicLeverageByIDRes
 	(*ProtoOADealListByPositionIdReq)(nil),        // 79: ProtoOADealListByPositionIdReq
 	(*ProtoOADealListByPositionIdRes)(nil),        // 80: ProtoOADealListByPositionIdRes
-	(ProtoOAPayloadType)(0),                       // 81: ProtoOAPayloadType
-	(ProtoOAOrderType)(0),                         // 82: ProtoOAOrderType
-	(ProtoOATradeSide)(0),                         // 83: ProtoOATradeSide
-	(ProtoOATimeInForce)(0),                       // 84: ProtoOATimeInForce
-	(ProtoOAOrderTriggerMethod)(0),                // 85: ProtoOAOrderTriggerMethod
-	(ProtoOAExecutionType)(0),                     // 86: ProtoOAExecutionType
-	(*ProtoOAPosition)(nil),                       // 87: ProtoOAPosition
-	(*ProtoOAOrder)(nil),                          // 88: ProtoOAOrder
-	(*ProtoOADeal)(nil),                           // 89: ProtoOADeal
-	(*ProtoOABonusDepositWithdraw)(nil),           // 90: ProtoOABonusDepositWithdraw
-	(*ProtoOADepositWithdraw)(nil),                // 91: ProtoOADepositWithdraw
-	(*ProtoOAAsset)(nil),                          // 92: ProtoOAAsset
-	(*ProtoOALightSymbol)(nil),                    // 93: ProtoOALightSymbol
-	(*ProtoOAArchivedSymbol)(nil),                 // 94: ProtoOAArchivedSymbol
-	(*ProtoOASymbol)(nil),                         // 95: ProtoOASymbol
-	(*ProtoOAAssetClass)(nil),                     // 96: ProtoOAAssetClass
-	(*ProtoOATrader)(nil),                         // 97: ProtoOATrader
-	(*ProtoOAExpectedMargin)(nil),                 // 98: ProtoOAExpectedMargin
-	(ProtoOAClientPermissionScope)(0),             // 99: ProtoOAClientPermissionScope
-	(*ProtoOACtidTraderAccount)(nil),              // 100: ProtoOACtidTraderAccount
-	(*ProtoOATrendbar)(nil),                       // 101: ProtoOATrendbar
-	(ProtoOATrendbarPeriod)(0),                    // 102: ProtoOATrendbarPeriod
-	(ProtoOAQuoteType)(0),                         // 103: ProtoOAQuoteType
-	(*ProtoOATickData)(nil),                       // 104: ProtoOATickData
-	(*ProtoOACtidProfile)(nil),                    // 105: ProtoOACtidProfile
-	(*ProtoOADepthQuote)(nil),                     // 106: ProtoOADepthQuote
-	(*ProtoOASymbolCategory)(nil),                 // 107: ProtoOASymbolCategory
-	(*ProtoOAMarginCall)(nil),                     // 108: ProtoOAMarginCall
-	(*ProtoOADynamicLeverage)(nil),                // 109: ProtoOADynamicLeverage
+	(*ProtoOAOrderDetailsReq)(nil),                // 81: ProtoOAOrderDetailsReq
+	(*ProtoOAOrderDetailsRes)(nil),                // 82: ProtoOAOrderDetailsRes
+	(*ProtoOAOrderListByPositionIdReq)(nil),       // 83: ProtoOAOrderListByPositionIdReq
+	(*ProtoOAOrderListByPositionIdRes)(nil),       // 84: ProtoOAOrderListByPositionIdRes
+	(*ProtoOADealOffsetListReq)(nil),              // 85: ProtoOADealOffsetListReq
+	(*ProtoOADealOffsetListRes)(nil),              // 86: ProtoOADealOffsetListRes
+	(ProtoOAPayloadType)(0),                       // 87: ProtoOAPayloadType
+	(ProtoOAOrderType)(0),                         // 88: ProtoOAOrderType
+	(ProtoOATradeSide)(0),                         // 89: ProtoOATradeSide
+	(ProtoOATimeInForce)(0),                       // 90: ProtoOATimeInForce
+	(ProtoOAOrderTriggerMethod)(0),                // 91: ProtoOAOrderTriggerMethod
+	(ProtoOAExecutionType)(0),                     // 92: ProtoOAExecutionType
+	(*ProtoOAPosition)(nil),                       // 93: ProtoOAPosition
+	(*ProtoOAOrder)(nil),                          // 94: ProtoOAOrder
+	(*ProtoOADeal)(nil),                           // 95: ProtoOADeal
+	(*ProtoOABonusDepositWithdraw)(nil),           // 96: ProtoOABonusDepositWithdraw
+	(*ProtoOADepositWithdraw)(nil),                // 97: ProtoOADepositWithdraw
+	(*ProtoOAAsset)(nil),                          // 98: ProtoOAAsset
+	(*ProtoOALightSymbol)(nil),                    // 99: ProtoOALightSymbol
+	(*ProtoOAArchivedSymbol)(nil),                 // 100: ProtoOAArchivedSymbol
+	(*ProtoOASymbol)(nil),                         // 101: ProtoOASymbol
+	(*ProtoOAAssetClass)(nil),                     // 102: ProtoOAAssetClass
+	(*ProtoOATrader)(nil),                         // 103: ProtoOATrader
+	(*ProtoOAExpectedMargin)(nil),                 // 104: ProtoOAExpectedMargin
+	(ProtoOAClientPermissionScope)(0),             // 105: ProtoOAClientPermissionScope
+	(*ProtoOACtidTraderAccount)(nil),              // 106: ProtoOACtidTraderAccount
+	(*ProtoOATrendbar)(nil),                       // 107: ProtoOATrendbar
+	(ProtoOATrendbarPeriod)(0),                    // 108: ProtoOATrendbarPeriod
+	(ProtoOAQuoteType)(0),                         // 109: ProtoOAQuoteType
+	(*ProtoOATickData)(nil),                       // 110: ProtoOATickData
+	(*ProtoOACtidProfile)(nil),                    // 111: ProtoOACtidProfile
+	(*ProtoOADepthQuote)(nil),                     // 112: ProtoOADepthQuote
+	(*ProtoOASymbolCategory)(nil),                 // 113: ProtoOASymbolCategory
+	(*ProtoOAMarginCall)(nil),                     // 114: ProtoOAMarginCall
+	(*ProtoOADynamicLeverage)(nil),                // 115: ProtoOADynamicLeverage
+	(*ProtoOADealOffset)(nil),                     // 116: ProtoOADealOffset
 }
 var file_OpenApiMessages_proto_depIdxs = []int32{
-	81,  // 0: ProtoOAApplicationAuthReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 1: ProtoOAApplicationAuthRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 2: ProtoOAAccountAuthReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 3: ProtoOAAccountAuthRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 4: ProtoOAErrorRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 5: ProtoOAClientDisconnectEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 6: ProtoOAAccountsTokenInvalidatedEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 7: ProtoOAVersionReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 8: ProtoOAVersionRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 9: ProtoOANewOrderReq.payloadType:type_name -> ProtoOAPayloadType
-	82,  // 10: ProtoOANewOrderReq.orderType:type_name -> ProtoOAOrderType
-	83,  // 11: ProtoOANewOrderReq.tradeSide:type_name -> ProtoOATradeSide
-	84,  // 12: ProtoOANewOrderReq.timeInForce:type_name -> ProtoOATimeInForce
-	85,  // 13: ProtoOANewOrderReq.stopTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
-	81,  // 14: ProtoOAExecutionEvent.payloadType:type_name -> ProtoOAPayloadType
-	86,  // 15: ProtoOAExecutionEvent.executionType:type_name -> ProtoOAExecutionType
-	87,  // 16: ProtoOAExecutionEvent.position:type_name -> ProtoOAPosition
-	88,  // 17: ProtoOAExecutionEvent.order:type_name -> ProtoOAOrder
-	89,  // 18: ProtoOAExecutionEvent.deal:type_name -> ProtoOADeal
-	90,  // 19: ProtoOAExecutionEvent.bonusDepositWithdraw:type_name -> ProtoOABonusDepositWithdraw
-	91,  // 20: ProtoOAExecutionEvent.depositWithdraw:type_name -> ProtoOADepositWithdraw
-	81,  // 21: ProtoOACancelOrderReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 22: ProtoOAAmendOrderReq.payloadType:type_name -> ProtoOAPayloadType
-	85,  // 23: ProtoOAAmendOrderReq.stopTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
-	81,  // 24: ProtoOAAmendPositionSLTPReq.payloadType:type_name -> ProtoOAPayloadType
-	85,  // 25: ProtoOAAmendPositionSLTPReq.stopLossTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
-	81,  // 26: ProtoOAClosePositionReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 27: ProtoOATrailingSLChangedEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 28: ProtoOAAssetListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 29: ProtoOAAssetListRes.payloadType:type_name -> ProtoOAPayloadType
-	92,  // 30: ProtoOAAssetListRes.asset:type_name -> ProtoOAAsset
-	81,  // 31: ProtoOASymbolsListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 32: ProtoOASymbolsListRes.payloadType:type_name -> ProtoOAPayloadType
-	93,  // 33: ProtoOASymbolsListRes.symbol:type_name -> ProtoOALightSymbol
-	94,  // 34: ProtoOASymbolsListRes.archivedSymbol:type_name -> ProtoOAArchivedSymbol
-	81,  // 35: ProtoOASymbolByIdReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 36: ProtoOASymbolByIdRes.payloadType:type_name -> ProtoOAPayloadType
-	95,  // 37: ProtoOASymbolByIdRes.symbol:type_name -> ProtoOASymbol
-	94,  // 38: ProtoOASymbolByIdRes.archivedSymbol:type_name -> ProtoOAArchivedSymbol
-	81,  // 39: ProtoOASymbolsForConversionReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 40: ProtoOASymbolsForConversionRes.payloadType:type_name -> ProtoOAPayloadType
-	93,  // 41: ProtoOASymbolsForConversionRes.symbol:type_name -> ProtoOALightSymbol
-	81,  // 42: ProtoOASymbolChangedEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 43: ProtoOAAssetClassListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 44: ProtoOAAssetClassListRes.payloadType:type_name -> ProtoOAPayloadType
-	96,  // 45: ProtoOAAssetClassListRes.assetClass:type_name -> ProtoOAAssetClass
-	81,  // 46: ProtoOATraderReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 47: ProtoOATraderRes.payloadType:type_name -> ProtoOAPayloadType
-	97,  // 48: ProtoOATraderRes.trader:type_name -> ProtoOATrader
-	81,  // 49: ProtoOATraderUpdatedEvent.payloadType:type_name -> ProtoOAPayloadType
-	97,  // 50: ProtoOATraderUpdatedEvent.trader:type_name -> ProtoOATrader
-	81,  // 51: ProtoOAReconcileReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 52: ProtoOAReconcileRes.payloadType:type_name -> ProtoOAPayloadType
-	87,  // 53: ProtoOAReconcileRes.position:type_name -> ProtoOAPosition
-	88,  // 54: ProtoOAReconcileRes.order:type_name -> ProtoOAOrder
-	81,  // 55: ProtoOAOrderErrorEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 56: ProtoOADealListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 57: ProtoOADealListRes.payloadType:type_name -> ProtoOAPayloadType
-	89,  // 58: ProtoOADealListRes.deal:type_name -> ProtoOADeal
-	81,  // 59: ProtoOAOrderListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 60: ProtoOAOrderListRes.payloadType:type_name -> ProtoOAPayloadType
-	88,  // 61: ProtoOAOrderListRes.order:type_name -> ProtoOAOrder
-	81,  // 62: ProtoOAExpectedMarginReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 63: ProtoOAExpectedMarginRes.payloadType:type_name -> ProtoOAPayloadType
-	98,  // 64: ProtoOAExpectedMarginRes.margin:type_name -> ProtoOAExpectedMargin
-	81,  // 65: ProtoOAMarginChangedEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 66: ProtoOACashFlowHistoryListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 67: ProtoOACashFlowHistoryListRes.payloadType:type_name -> ProtoOAPayloadType
-	91,  // 68: ProtoOACashFlowHistoryListRes.depositWithdraw:type_name -> ProtoOADepositWithdraw
-	81,  // 69: ProtoOAGetAccountListByAccessTokenReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 70: ProtoOAGetAccountListByAccessTokenRes.payloadType:type_name -> ProtoOAPayloadType
-	99,  // 71: ProtoOAGetAccountListByAccessTokenRes.permissionScope:type_name -> ProtoOAClientPermissionScope
-	100, // 72: ProtoOAGetAccountListByAccessTokenRes.ctidTraderAccount:type_name -> ProtoOACtidTraderAccount
-	81,  // 73: ProtoOARefreshTokenReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 74: ProtoOARefreshTokenRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 75: ProtoOASubscribeSpotsReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 76: ProtoOASubscribeSpotsRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 77: ProtoOAUnsubscribeSpotsReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 78: ProtoOAUnsubscribeSpotsRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 79: ProtoOASpotEvent.payloadType:type_name -> ProtoOAPayloadType
-	101, // 80: ProtoOASpotEvent.trendbar:type_name -> ProtoOATrendbar
-	81,  // 81: ProtoOASubscribeLiveTrendbarReq.payloadType:type_name -> ProtoOAPayloadType
-	102, // 82: ProtoOASubscribeLiveTrendbarReq.period:type_name -> ProtoOATrendbarPeriod
-	81,  // 83: ProtoOASubscribeLiveTrendbarRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 84: ProtoOAUnsubscribeLiveTrendbarReq.payloadType:type_name -> ProtoOAPayloadType
-	102, // 85: ProtoOAUnsubscribeLiveTrendbarReq.period:type_name -> ProtoOATrendbarPeriod
-	81,  // 86: ProtoOAUnsubscribeLiveTrendbarRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 87: ProtoOAGetTrendbarsReq.payloadType:type_name -> ProtoOAPayloadType
-	102, // 88: ProtoOAGetTrendbarsReq.period:type_name -> ProtoOATrendbarPeriod
-	81,  // 89: ProtoOAGetTrendbarsRes.payloadType:type_name -> ProtoOAPayloadType
-	102, // 90: ProtoOAGetTrendbarsRes.period:type_name -> ProtoOATrendbarPeriod
-	101, // 91: ProtoOAGetTrendbarsRes.trendbar:type_name -> ProtoOATrendbar
-	81,  // 92: ProtoOAGetTickDataReq.payloadType:type_name -> ProtoOAPayloadType
-	103, // 93: ProtoOAGetTickDataReq.type:type_name -> ProtoOAQuoteType
-	81,  // 94: ProtoOAGetTickDataRes.payloadType:type_name -> ProtoOAPayloadType
-	104, // 95: ProtoOAGetTickDataRes.tickData:type_name -> ProtoOATickData
-	81,  // 96: ProtoOAGetCtidProfileByTokenReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 97: ProtoOAGetCtidProfileByTokenRes.payloadType:type_name -> ProtoOAPayloadType
-	105, // 98: ProtoOAGetCtidProfileByTokenRes.profile:type_name -> ProtoOACtidProfile
-	81,  // 99: ProtoOADepthEvent.payloadType:type_name -> ProtoOAPayloadType
-	106, // 100: ProtoOADepthEvent.newQuotes:type_name -> ProtoOADepthQuote
-	81,  // 101: ProtoOASubscribeDepthQuotesReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 102: ProtoOASubscribeDepthQuotesRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 103: ProtoOAUnsubscribeDepthQuotesReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 104: ProtoOAUnsubscribeDepthQuotesRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 105: ProtoOASymbolCategoryListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 106: ProtoOASymbolCategoryListRes.payloadType:type_name -> ProtoOAPayloadType
-	107, // 107: ProtoOASymbolCategoryListRes.symbolCategory:type_name -> ProtoOASymbolCategory
-	81,  // 108: ProtoOAAccountLogoutReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 109: ProtoOAAccountLogoutRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 110: ProtoOAAccountDisconnectEvent.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 111: ProtoOAMarginCallListReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 112: ProtoOAMarginCallListRes.payloadType:type_name -> ProtoOAPayloadType
-	108, // 113: ProtoOAMarginCallListRes.marginCall:type_name -> ProtoOAMarginCall
-	81,  // 114: ProtoOAMarginCallUpdateReq.payloadType:type_name -> ProtoOAPayloadType
-	108, // 115: ProtoOAMarginCallUpdateReq.marginCall:type_name -> ProtoOAMarginCall
-	81,  // 116: ProtoOAMarginCallUpdateRes.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 117: ProtoOAMarginCallUpdateEvent.payloadType:type_name -> ProtoOAPayloadType
-	108, // 118: ProtoOAMarginCallUpdateEvent.marginCall:type_name -> ProtoOAMarginCall
-	81,  // 119: ProtoOAMarginCallTriggerEvent.payloadType:type_name -> ProtoOAPayloadType
-	108, // 120: ProtoOAMarginCallTriggerEvent.marginCall:type_name -> ProtoOAMarginCall
-	81,  // 121: ProtoOAGetDynamicLeverageByIDReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 122: ProtoOAGetDynamicLeverageByIDRes.payloadType:type_name -> ProtoOAPayloadType
-	109, // 123: ProtoOAGetDynamicLeverageByIDRes.leverage:type_name -> ProtoOADynamicLeverage
-	81,  // 124: ProtoOADealListByPositionIdReq.payloadType:type_name -> ProtoOAPayloadType
-	81,  // 125: ProtoOADealListByPositionIdRes.payloadType:type_name -> ProtoOAPayloadType
-	89,  // 126: ProtoOADealListByPositionIdRes.deal:type_name -> ProtoOADeal
-	127, // [127:127] is the sub-list for method output_type
-	127, // [127:127] is the sub-list for method input_type
-	127, // [127:127] is the sub-list for extension type_name
-	127, // [127:127] is the sub-list for extension extendee
-	0,   // [0:127] is the sub-list for field type_name
+	87,  // 0: ProtoOAApplicationAuthReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 1: ProtoOAApplicationAuthRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 2: ProtoOAAccountAuthReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 3: ProtoOAAccountAuthRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 4: ProtoOAErrorRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 5: ProtoOAClientDisconnectEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 6: ProtoOAAccountsTokenInvalidatedEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 7: ProtoOAVersionReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 8: ProtoOAVersionRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 9: ProtoOANewOrderReq.payloadType:type_name -> ProtoOAPayloadType
+	88,  // 10: ProtoOANewOrderReq.orderType:type_name -> ProtoOAOrderType
+	89,  // 11: ProtoOANewOrderReq.tradeSide:type_name -> ProtoOATradeSide
+	90,  // 12: ProtoOANewOrderReq.timeInForce:type_name -> ProtoOATimeInForce
+	91,  // 13: ProtoOANewOrderReq.stopTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
+	87,  // 14: ProtoOAExecutionEvent.payloadType:type_name -> ProtoOAPayloadType
+	92,  // 15: ProtoOAExecutionEvent.executionType:type_name -> ProtoOAExecutionType
+	93,  // 16: ProtoOAExecutionEvent.position:type_name -> ProtoOAPosition
+	94,  // 17: ProtoOAExecutionEvent.order:type_name -> ProtoOAOrder
+	95,  // 18: ProtoOAExecutionEvent.deal:type_name -> ProtoOADeal
+	96,  // 19: ProtoOAExecutionEvent.bonusDepositWithdraw:type_name -> ProtoOABonusDepositWithdraw
+	97,  // 20: ProtoOAExecutionEvent.depositWithdraw:type_name -> ProtoOADepositWithdraw
+	87,  // 21: ProtoOACancelOrderReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 22: ProtoOAAmendOrderReq.payloadType:type_name -> ProtoOAPayloadType
+	91,  // 23: ProtoOAAmendOrderReq.stopTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
+	87,  // 24: ProtoOAAmendPositionSLTPReq.payloadType:type_name -> ProtoOAPayloadType
+	91,  // 25: ProtoOAAmendPositionSLTPReq.stopLossTriggerMethod:type_name -> ProtoOAOrderTriggerMethod
+	87,  // 26: ProtoOAClosePositionReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 27: ProtoOATrailingSLChangedEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 28: ProtoOAAssetListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 29: ProtoOAAssetListRes.payloadType:type_name -> ProtoOAPayloadType
+	98,  // 30: ProtoOAAssetListRes.asset:type_name -> ProtoOAAsset
+	87,  // 31: ProtoOASymbolsListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 32: ProtoOASymbolsListRes.payloadType:type_name -> ProtoOAPayloadType
+	99,  // 33: ProtoOASymbolsListRes.symbol:type_name -> ProtoOALightSymbol
+	100, // 34: ProtoOASymbolsListRes.archivedSymbol:type_name -> ProtoOAArchivedSymbol
+	87,  // 35: ProtoOASymbolByIdReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 36: ProtoOASymbolByIdRes.payloadType:type_name -> ProtoOAPayloadType
+	101, // 37: ProtoOASymbolByIdRes.symbol:type_name -> ProtoOASymbol
+	100, // 38: ProtoOASymbolByIdRes.archivedSymbol:type_name -> ProtoOAArchivedSymbol
+	87,  // 39: ProtoOASymbolsForConversionReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 40: ProtoOASymbolsForConversionRes.payloadType:type_name -> ProtoOAPayloadType
+	99,  // 41: ProtoOASymbolsForConversionRes.symbol:type_name -> ProtoOALightSymbol
+	87,  // 42: ProtoOASymbolChangedEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 43: ProtoOAAssetClassListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 44: ProtoOAAssetClassListRes.payloadType:type_name -> ProtoOAPayloadType
+	102, // 45: ProtoOAAssetClassListRes.assetClass:type_name -> ProtoOAAssetClass
+	87,  // 46: ProtoOATraderReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 47: ProtoOATraderRes.payloadType:type_name -> ProtoOAPayloadType
+	103, // 48: ProtoOATraderRes.trader:type_name -> ProtoOATrader
+	87,  // 49: ProtoOATraderUpdatedEvent.payloadType:type_name -> ProtoOAPayloadType
+	103, // 50: ProtoOATraderUpdatedEvent.trader:type_name -> ProtoOATrader
+	87,  // 51: ProtoOAReconcileReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 52: ProtoOAReconcileRes.payloadType:type_name -> ProtoOAPayloadType
+	93,  // 53: ProtoOAReconcileRes.position:type_name -> ProtoOAPosition
+	94,  // 54: ProtoOAReconcileRes.order:type_name -> ProtoOAOrder
+	87,  // 55: ProtoOAOrderErrorEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 56: ProtoOADealListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 57: ProtoOADealListRes.payloadType:type_name -> ProtoOAPayloadType
+	95,  // 58: ProtoOADealListRes.deal:type_name -> ProtoOADeal
+	87,  // 59: ProtoOAOrderListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 60: ProtoOAOrderListRes.payloadType:type_name -> ProtoOAPayloadType
+	94,  // 61: ProtoOAOrderListRes.order:type_name -> ProtoOAOrder
+	87,  // 62: ProtoOAExpectedMarginReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 63: ProtoOAExpectedMarginRes.payloadType:type_name -> ProtoOAPayloadType
+	104, // 64: ProtoOAExpectedMarginRes.margin:type_name -> ProtoOAExpectedMargin
+	87,  // 65: ProtoOAMarginChangedEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 66: ProtoOACashFlowHistoryListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 67: ProtoOACashFlowHistoryListRes.payloadType:type_name -> ProtoOAPayloadType
+	97,  // 68: ProtoOACashFlowHistoryListRes.depositWithdraw:type_name -> ProtoOADepositWithdraw
+	87,  // 69: ProtoOAGetAccountListByAccessTokenReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 70: ProtoOAGetAccountListByAccessTokenRes.payloadType:type_name -> ProtoOAPayloadType
+	105, // 71: ProtoOAGetAccountListByAccessTokenRes.permissionScope:type_name -> ProtoOAClientPermissionScope
+	106, // 72: ProtoOAGetAccountListByAccessTokenRes.ctidTraderAccount:type_name -> ProtoOACtidTraderAccount
+	87,  // 73: ProtoOARefreshTokenReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 74: ProtoOARefreshTokenRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 75: ProtoOASubscribeSpotsReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 76: ProtoOASubscribeSpotsRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 77: ProtoOAUnsubscribeSpotsReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 78: ProtoOAUnsubscribeSpotsRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 79: ProtoOASpotEvent.payloadType:type_name -> ProtoOAPayloadType
+	107, // 80: ProtoOASpotEvent.trendbar:type_name -> ProtoOATrendbar
+	87,  // 81: ProtoOASubscribeLiveTrendbarReq.payloadType:type_name -> ProtoOAPayloadType
+	108, // 82: ProtoOASubscribeLiveTrendbarReq.period:type_name -> ProtoOATrendbarPeriod
+	87,  // 83: ProtoOASubscribeLiveTrendbarRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 84: ProtoOAUnsubscribeLiveTrendbarReq.payloadType:type_name -> ProtoOAPayloadType
+	108, // 85: ProtoOAUnsubscribeLiveTrendbarReq.period:type_name -> ProtoOATrendbarPeriod
+	87,  // 86: ProtoOAUnsubscribeLiveTrendbarRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 87: ProtoOAGetTrendbarsReq.payloadType:type_name -> ProtoOAPayloadType
+	108, // 88: ProtoOAGetTrendbarsReq.period:type_name -> ProtoOATrendbarPeriod
+	87,  // 89: ProtoOAGetTrendbarsRes.payloadType:type_name -> ProtoOAPayloadType
+	108, // 90: ProtoOAGetTrendbarsRes.period:type_name -> ProtoOATrendbarPeriod
+	107, // 91: ProtoOAGetTrendbarsRes.trendbar:type_name -> ProtoOATrendbar
+	87,  // 92: ProtoOAGetTickDataReq.payloadType:type_name -> ProtoOAPayloadType
+	109, // 93: ProtoOAGetTickDataReq.type:type_name -> ProtoOAQuoteType
+	87,  // 94: ProtoOAGetTickDataRes.payloadType:type_name -> ProtoOAPayloadType
+	110, // 95: ProtoOAGetTickDataRes.tickData:type_name -> ProtoOATickData
+	87,  // 96: ProtoOAGetCtidProfileByTokenReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 97: ProtoOAGetCtidProfileByTokenRes.payloadType:type_name -> ProtoOAPayloadType
+	111, // 98: ProtoOAGetCtidProfileByTokenRes.profile:type_name -> ProtoOACtidProfile
+	87,  // 99: ProtoOADepthEvent.payloadType:type_name -> ProtoOAPayloadType
+	112, // 100: ProtoOADepthEvent.newQuotes:type_name -> ProtoOADepthQuote
+	87,  // 101: ProtoOASubscribeDepthQuotesReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 102: ProtoOASubscribeDepthQuotesRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 103: ProtoOAUnsubscribeDepthQuotesReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 104: ProtoOAUnsubscribeDepthQuotesRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 105: ProtoOASymbolCategoryListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 106: ProtoOASymbolCategoryListRes.payloadType:type_name -> ProtoOAPayloadType
+	113, // 107: ProtoOASymbolCategoryListRes.symbolCategory:type_name -> ProtoOASymbolCategory
+	87,  // 108: ProtoOAAccountLogoutReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 109: ProtoOAAccountLogoutRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 110: ProtoOAAccountDisconnectEvent.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 111: ProtoOAMarginCallListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 112: ProtoOAMarginCallListRes.payloadType:type_name -> ProtoOAPayloadType
+	114, // 113: ProtoOAMarginCallListRes.marginCall:type_name -> ProtoOAMarginCall
+	87,  // 114: ProtoOAMarginCallUpdateReq.payloadType:type_name -> ProtoOAPayloadType
+	114, // 115: ProtoOAMarginCallUpdateReq.marginCall:type_name -> ProtoOAMarginCall
+	87,  // 116: ProtoOAMarginCallUpdateRes.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 117: ProtoOAMarginCallUpdateEvent.payloadType:type_name -> ProtoOAPayloadType
+	114, // 118: ProtoOAMarginCallUpdateEvent.marginCall:type_name -> ProtoOAMarginCall
+	87,  // 119: ProtoOAMarginCallTriggerEvent.payloadType:type_name -> ProtoOAPayloadType
+	114, // 120: ProtoOAMarginCallTriggerEvent.marginCall:type_name -> ProtoOAMarginCall
+	87,  // 121: ProtoOAGetDynamicLeverageByIDReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 122: ProtoOAGetDynamicLeverageByIDRes.payloadType:type_name -> ProtoOAPayloadType
+	115, // 123: ProtoOAGetDynamicLeverageByIDRes.leverage:type_name -> ProtoOADynamicLeverage
+	87,  // 124: ProtoOADealListByPositionIdReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 125: ProtoOADealListByPositionIdRes.payloadType:type_name -> ProtoOAPayloadType
+	95,  // 126: ProtoOADealListByPositionIdRes.deal:type_name -> ProtoOADeal
+	87,  // 127: ProtoOAOrderDetailsReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 128: ProtoOAOrderDetailsRes.payloadType:type_name -> ProtoOAPayloadType
+	94,  // 129: ProtoOAOrderDetailsRes.order:type_name -> ProtoOAOrder
+	95,  // 130: ProtoOAOrderDetailsRes.deal:type_name -> ProtoOADeal
+	87,  // 131: ProtoOAOrderListByPositionIdReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 132: ProtoOAOrderListByPositionIdRes.payloadType:type_name -> ProtoOAPayloadType
+	94,  // 133: ProtoOAOrderListByPositionIdRes.order:type_name -> ProtoOAOrder
+	87,  // 134: ProtoOADealOffsetListReq.payloadType:type_name -> ProtoOAPayloadType
+	87,  // 135: ProtoOADealOffsetListRes.payloadType:type_name -> ProtoOAPayloadType
+	116, // 136: ProtoOADealOffsetListRes.offsetBy:type_name -> ProtoOADealOffset
+	116, // 137: ProtoOADealOffsetListRes.offsetting:type_name -> ProtoOADealOffset
+	138, // [138:138] is the sub-list for method output_type
+	138, // [138:138] is the sub-list for method input_type
+	138, // [138:138] is the sub-list for extension type_name
+	138, // [138:138] is the sub-list for extension extendee
+	0,   // [0:138] is the sub-list for field type_name
 }
 
 func init() { file_OpenApiMessages_proto_init() }
@@ -8572,6 +9132,78 @@ func file_OpenApiMessages_proto_init() {
 				return nil
 			}
 		}
+		file_OpenApiMessages_proto_msgTypes[81].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOAOrderDetailsReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_OpenApiMessages_proto_msgTypes[82].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOAOrderDetailsRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_OpenApiMessages_proto_msgTypes[83].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOAOrderListByPositionIdReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_OpenApiMessages_proto_msgTypes[84].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOAOrderListByPositionIdRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_OpenApiMessages_proto_msgTypes[85].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOADealOffsetListReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_OpenApiMessages_proto_msgTypes[86].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProtoOADealOffsetListRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -8579,7 +9211,7 @@ func file_OpenApiMessages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_OpenApiMessages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   81,
+			NumMessages:   87,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
