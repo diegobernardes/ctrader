@@ -12,10 +12,10 @@ configure:
 go-test:
   ARG INTEGRATION_TEST="true"
   FROM +go-base
-  RUN go install github.com/mfridman/tparse@v0.12.1
+  RUN go install github.com/mfridman/tparse@v0.12.2
   IF [ "$INTEGRATION_TEST" = "true" ]
     RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
-      go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
+      go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
   ELSE
     RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
   END
