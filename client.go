@@ -68,6 +68,15 @@ func (c *Client) Stop() error {
 	return nil
 }
 
+func (c *Client) SendRequest(ctx context.Context, req proto.Message) (proto.Message, error) {
+	return c.send(ctx, req, true)
+}
+
+func (c *Client) SendEvent(ctx context.Context, req proto.Message) error {
+	_, err := c.send(ctx, req, false)
+	return err
+}
+
 func (c *Client) AccountAuth(
 	ctx context.Context, accountIDRaw int, token string,
 ) (*openapi.ProtoOAAccountAuthRes, error) {
@@ -76,7 +85,7 @@ func (c *Client) AccountAuth(
 		AccessToken:         &token,
 		CtidTraderAccountId: &accountID,
 	}
-	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_ACCOUNT_AUTH_REQ), true)
+	resp, err := c.SendRequest(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute the request: %w", err)
 	}
@@ -95,7 +104,7 @@ func (c *Client) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.Pro
 	req := &openapi.ProtoOASymbolsListReq{
 		CtidTraderAccountId: &accountID,
 	}
-	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_SYMBOLS_LIST_REQ), true)
+	resp, err := c.SendRequest(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute the request: %w", err)
 	}
@@ -117,7 +126,7 @@ func (c *Client) Subscribe(
 		CtidTraderAccountId: &accountID,
 		SymbolId:            symbols,
 	}
-	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_SUBSCRIBE_SPOTS_REQ), true)
+	resp, err := c.SendRequest(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute the request: %w", err)
 	}
@@ -133,7 +142,7 @@ func (c *Client) Subscribe(
 
 func (c *Client) Version(ctx context.Context) (*openapi.ProtoOAVersionRes, error) {
 	req := &openapi.ProtoOAVersionReq{}
-	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_VERSION_REQ), true)
+	resp, err := c.SendRequest(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute the request: %w", err)
 	}
@@ -152,7 +161,7 @@ func (c *Client) applicationAuthorization(ctx context.Context) error {
 		ClientId:     &c.ApplicationClientID,
 		ClientSecret: &c.ApplicationSecret,
 	}
-	resp, err := c.send(ctx, req, int32(openapi.ProtoOAPayloadType_PROTO_OA_APPLICATION_AUTH_REQ), true)
+	resp, err := c.SendRequest(ctx, req)
 	if err != nil {
 		return fmt.Errorf("failed to send the message: %w", err)
 	}
@@ -212,7 +221,7 @@ func (c *Client) keepalive() {
 			req := openapi.ProtoMessage{
 				PayloadType: &payloadType,
 			}
-			if _, err := c.send(context.Background(), &req, int32(payloadTypeRaw), false); err != nil {
+			if err := c.SendEvent(context.Background(), &req); err != nil {
 				c.handlerError(fmt.Errorf("failed to send the heartbeat event: %w", err))
 			}
 		}
@@ -236,16 +245,19 @@ func (c *Client) handlerError(err error) {
 	}
 }
 
-func (c *Client) send(
-	ctx context.Context, req proto.Message, reqTypeRaw int32, hasResponse bool,
-) (proto.Message, error) {
+func (c *Client) send(ctx context.Context, req proto.Message, isRequest bool) (proto.Message, error) {
+	payloadType, err := mappingPayloadType(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get the payload type: %w", err)
+	}
+
 	payloadBase, err := proto.Marshal(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal base request: %w", err)
 	}
 
 	id := uuid.NewV4().String()
-	reqType := uint32(reqTypeRaw)
+	reqType := uint32(payloadType)
 	message := openapi.ProtoMessage{
 		ClientMsgId: &id,
 		Payload:     payloadBase,
@@ -257,7 +269,7 @@ func (c *Client) send(
 	}
 
 	var chanResponse chan *openapi.ProtoMessage
-	if hasResponse {
+	if isRequest {
 		chanResponse = make(chan *openapi.ProtoMessage, 1)
 		c.requestRegistryMutex.Lock()
 		c.requestRegistry[id] = chanResponse
@@ -269,7 +281,7 @@ func (c *Client) send(
 		return nil, fmt.Errorf("failed to send the message: %w", errSend)
 	}
 
-	if !hasResponse {
+	if !isRequest {
 		return nil, nil
 	}
 
