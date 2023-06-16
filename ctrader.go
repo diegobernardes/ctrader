@@ -9,11 +9,11 @@ import (
 	"github.com/diegobernardes/ctrader/openapi"
 )
 
-type errorUndefinedProtobufResource[T string | uint32] struct {
+type undefinedProtobufResourceError[T string | uint32] struct {
 	Value T
 }
 
-func (e errorUndefinedProtobufResource[T]) Error() string {
+func (e undefinedProtobufResourceError[T]) Error() string {
 	t := reflect.TypeOf(e.Value)
 	if t.Kind() == reflect.String {
 		return fmt.Sprintf("undefined request type '%s'", t.Elem())
@@ -121,7 +121,7 @@ func mappingResponse(payloadType uint32) (proto.Message, error) {
 	case uint32(openapi.ProtoOAPayloadType_PROTO_OA_DEAL_LIST_BY_POSITION_ID_RES):
 		response = &openapi.ProtoOADealListByPositionIdRes{}
 	default:
-		return nil, errorUndefinedProtobufResource[uint32]{Value: payloadType}
+		return nil, undefinedProtobufResourceError[uint32]{Value: payloadType}
 	}
 	return response, nil
 }
@@ -139,6 +139,6 @@ func mappingPayloadType(t proto.Message) (openapi.ProtoOAPayloadType, error) {
 	case *openapi.ProtoOAApplicationAuthReq:
 		return openapi.ProtoOAPayloadType_PROTO_OA_APPLICATION_AUTH_REQ, nil
 	default:
-		return 0, errorUndefinedProtobufResource[string]{Value: reflect.TypeOf(t).String()}
+		return 0, undefinedProtobufResourceError[string]{Value: reflect.TypeOf(t).String()}
 	}
 }
