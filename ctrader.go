@@ -125,3 +125,20 @@ func mappingResponse(payloadType uint32) (proto.Message, error) {
 	}
 	return response, nil
 }
+
+func mappingPayloadType(t proto.Message) (openapi.ProtoOAPayloadType, error) {
+	switch t.(type) {
+	case *openapi.ProtoOAAccountAuthReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_ACCOUNT_AUTH_REQ, nil
+	case *openapi.ProtoOASymbolsListReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_SYMBOLS_LIST_REQ, nil
+	case *openapi.ProtoOASubscribeSpotsReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_SUBSCRIBE_SPOTS_REQ, nil
+	case *openapi.ProtoOAVersionReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_VERSION_REQ, nil
+	case *openapi.ProtoOAApplicationAuthReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_APPLICATION_AUTH_REQ, nil
+	default:
+		return 0, errorUndefinedProtobufResource[string]{Value: reflect.TypeOf(t).String()}
+	}
+}

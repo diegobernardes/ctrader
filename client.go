@@ -69,12 +69,62 @@ func (c *Client) Stop() error {
 }
 
 func (c *Client) SendRequest(ctx context.Context, req proto.Message) (proto.Message, error) {
-	return c.send(ctx, req, true)
+	payloadType, err := mappingPayloadType(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get the payload type: %w", err)
+	}
+
+	payloadBase, err := proto.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal base request: %w", err)
+	}
+
+	id := uuid.NewV4().String()
+	reqType := uint32(payloadType)
+	message := openapi.ProtoMessage{
+		ClientMsgId: &id,
+		Payload:     payloadBase,
+		PayloadType: &reqType,
+	}
+	payload, err := proto.Marshal(&message)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	chanResponse := make(chan *openapi.ProtoMessage, 1)
+	c.requestRegistryMutex.Lock()
+	c.requestRegistry[id] = chanResponse
+	c.requestRegistryMutex.Unlock()
+	defer delete(c.requestRegistry, id)
+
+	if errSend := c.transport.send(payload); errSend != nil {
+		return nil, fmt.Errorf("failed to send the message: %w", errSend)
+	}
+
+	select {
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context error: %w", ctx.Err())
+	case messageBase := <-chanResponse:
+		message, errMessage := mappingResponse(*messageBase.PayloadType)
+		if errMessage != nil {
+			return nil, fmt.Errorf("failed to get the response type: %w", errMessage)
+		}
+		if err = proto.Unmarshal(messageBase.Payload, message); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal the response: %w", err)
+		}
+		return message, nil
+	}
 }
 
-func (c *Client) SendEvent(ctx context.Context, req proto.Message) error {
-	_, err := c.send(ctx, req, false)
-	return err
+func (c *Client) SendEvent(ctx context.Context, e proto.Message) error {
+	payload, err := proto.Marshal(e)
+	if err != nil {
+		return fmt.Errorf("failed to marshal event: %w", err)
+	}
+	if errSend := c.transport.send(payload); errSend != nil {
+		return fmt.Errorf("failed to send the message: %w", errSend)
+	}
+	return nil
 }
 
 func (c *Client) AccountAuth(
@@ -242,60 +292,5 @@ func (c *Client) handlerError(err error) {
 			continue
 		}
 		break
-	}
-}
-
-func (c *Client) send(ctx context.Context, req proto.Message, isRequest bool) (proto.Message, error) {
-	payloadType, err := mappingPayloadType(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get the payload type: %w", err)
-	}
-
-	payloadBase, err := proto.Marshal(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal base request: %w", err)
-	}
-
-	id := uuid.NewV4().String()
-	reqType := uint32(payloadType)
-	message := openapi.ProtoMessage{
-		ClientMsgId: &id,
-		Payload:     payloadBase,
-		PayloadType: &reqType,
-	}
-	payload, err := proto.Marshal(&message)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	var chanResponse chan *openapi.ProtoMessage
-	if isRequest {
-		chanResponse = make(chan *openapi.ProtoMessage, 1)
-		c.requestRegistryMutex.Lock()
-		c.requestRegistry[id] = chanResponse
-		c.requestRegistryMutex.Unlock()
-		defer delete(c.requestRegistry, id)
-	}
-
-	if errSend := c.transport.send(payload); errSend != nil {
-		return nil, fmt.Errorf("failed to send the message: %w", errSend)
-	}
-
-	if !isRequest {
-		return nil, nil
-	}
-
-	select {
-	case <-ctx.Done():
-		return nil, fmt.Errorf("context error: %w", ctx.Err())
-	case messageBase := <-chanResponse:
-		message, errMessage := mappingResponse(*messageBase.PayloadType)
-		if errMessage != nil {
-			return nil, fmt.Errorf("failed to get the response type: %w", errMessage)
-		}
-		if err = proto.Unmarshal(messageBase.Payload, message); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal the response: %w", err)
-		}
-		return message, nil
 	}
 }
