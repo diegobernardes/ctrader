@@ -116,7 +116,7 @@ func (c *Client) SendRequest(ctx context.Context, req proto.Message) (proto.Mess
 	}
 }
 
-func (c *Client) SendEvent(ctx context.Context, e proto.Message) error {
+func (c *Client) SendEvent(_ context.Context, e proto.Message) error {
 	payload, err := proto.Marshal(e)
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)
