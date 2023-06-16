@@ -1,6 +1,6 @@
 VERSION 0.6
 
-ARG GO_IMAGE=golang:1.20-bullseye
+ARG GO_IMAGE=golang:1.20-bookworm
 ARG WORKDIR=/opt/ctrader
 
 configure:

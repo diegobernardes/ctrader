@@ -1,4 +1,8 @@
 # Protobuf
+## When it should be updated?
+Every time the Docker image or the `protoc-gen-go` version change at the `compile-proto` target in the
+[Earthfile](../Earthfile).
+
 ## How can I update it?
 1. Update the tag version at the git clone command under the `compile-proto` target at the [Earthfile](../Earthfile).
 2. In case new messages are added, update the corresponding `mapping*` functions at [ctrader.go](../ctrader.go).
