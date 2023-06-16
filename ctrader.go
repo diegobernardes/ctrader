@@ -2,11 +2,24 @@ package ctrader
 
 import (
 	"fmt"
+	"reflect"
 
 	"google.golang.org/protobuf/proto"
 
 	"github.com/diegobernardes/ctrader/openapi"
 )
+
+type errorUndefinedProtobufResource[T string | uint32] struct {
+	Value T
+}
+
+func (e errorUndefinedProtobufResource[T]) Error() string {
+	t := reflect.TypeOf(e.Value)
+	if t.Kind() == reflect.String {
+		return fmt.Sprintf("undefined request type '%s'", t.Elem())
+	}
+	return fmt.Sprintf("undefined payload type '%d'", t.Elem())
+}
 
 func mappingResponse(payloadType uint32) (proto.Message, error) {
 	var response proto.Message
@@ -108,7 +121,7 @@ func mappingResponse(payloadType uint32) (proto.Message, error) {
 	case uint32(openapi.ProtoOAPayloadType_PROTO_OA_DEAL_LIST_BY_POSITION_ID_RES):
 		response = &openapi.ProtoOADealListByPositionIdRes{}
 	default:
-		return nil, fmt.Errorf("unknow message type '%d'", payloadType)
+		return nil, errorUndefinedProtobufResource[uint32]{Value: payloadType}
 	}
 	return response, nil
 }
