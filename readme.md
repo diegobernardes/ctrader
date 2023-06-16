@@ -83,5 +83,9 @@ The easiest way is to use the
 - Ensure the package still compiles `go build ./...`.
 - Open a pull request.
 
+## Documentation
+- [Protobuf](./docs/protobuf.md)
+- [Testing](./docs/testing.md)
+
 ## Acknowledgments
 * [ty2/ctrader-go](https://github.com/ty2/ctrader-go)
