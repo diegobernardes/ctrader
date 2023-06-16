@@ -212,14 +212,14 @@ func (c *Client) keepalive() {
 			ticker.Stop()
 			c.wg.Done()
 		}()
+		payloadTypeRaw := openapi.ProtoPayloadType_HEARTBEAT_EVENT
+		payloadType := uint32(payloadTypeRaw)
+		req := openapi.ProtoMessage{
+			PayloadType: &payloadType,
+		}
 		for range ticker.C {
 			if c.stopSignal.Load() {
 				return
-			}
-			payloadTypeRaw := openapi.ProtoPayloadType_HEARTBEAT_EVENT
-			payloadType := uint32(payloadTypeRaw)
-			req := openapi.ProtoMessage{
-				PayloadType: &payloadType,
 			}
 			if err := c.SendEvent(context.Background(), &req); err != nil {
 				c.handlerError(fmt.Errorf("failed to send the heartbeat event: %w", err))
