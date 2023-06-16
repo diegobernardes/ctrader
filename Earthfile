@@ -17,7 +17,7 @@ go-test:
     RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
       go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
   ELSE
-    RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all
+    RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
   END
 
 go-build:
