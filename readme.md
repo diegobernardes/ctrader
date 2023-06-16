@@ -1,5 +1,6 @@
 # cTrader Go SDK
 This repository contains a Go SDK to consume [cTrader OpenAPI](https://help.ctrader.com/open-api).
+<img src="docs/gopher.svg" align="right" height="204px" width="200px" />
 
 ## Requirements
 - Go 1.20 or higher.
@@ -89,3 +90,4 @@ The easiest way is to use the
 
 ## Acknowledgments
 * [ty2/ctrader-go](https://github.com/ty2/ctrader-go)
+* [MariaLetta/free-gophers-pack](https://github.com/MariaLetta/free-gophers-pack)
