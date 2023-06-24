@@ -37,7 +37,6 @@ linters:
     - ireturn
     - lll
     - nilerr
-    - nolintlint
     - prealloc
     - predeclared
     - reassign
@@ -108,10 +107,6 @@ linters-settings:
       - empty
       - stdlib
       - protoreflect.ProtoMessage
-
-  nolintlint:
-    require-explanation: true
-    require-specific: true
 
   prealloc:
     simple: false
