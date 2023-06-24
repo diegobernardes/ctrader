@@ -24,6 +24,8 @@ func (e undefinedProtobufResourceError[T]) Error() string {
 }
 
 // Command is a helper function used to send a request and receive a response.
+//
+// nolint ireturn
 func Command[A, B proto.Message](ctx context.Context, c *Client, req A) (B, error) {
 	resp, err := c.sendRequest(ctx, req)
 	if err != nil {
