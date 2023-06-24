@@ -106,6 +106,7 @@ linters-settings:
       - error
       - empty
       - stdlib
+      - generic
       - protoreflect.ProtoMessage
 
   prealloc:
