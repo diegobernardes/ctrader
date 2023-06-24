@@ -10,7 +10,7 @@ configure:
     && git config branch.main.mergeoptions "--ff-only"
 
 go-test:
-  ARG INTEGRATION_TEST="true"
+  ARG INTEGRATION_TEST="false"
   FROM +go-base
   RUN go install github.com/mfridman/tparse@v0.12.2
   IF [ "$INTEGRATION_TEST" = "true" ]

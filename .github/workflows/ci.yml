@@ -19,11 +19,9 @@ jobs:
             go-build,
             go-linter,
             go-mod-linter,
-            compile-proto
+            compile-proto,
+            go-test
           ]
-        include:
-          - target: go-test
-            flags: --INTEGRATION_TEST="false"
 
     steps:
       - name: Checkout code
@@ -32,7 +30,7 @@ jobs:
       - name: Exec ${{ matrix.target }}
         env:
           FORCE_COLOR: 1
-        run: earthly +${{ matrix.target }} ${{ matrix.flags }}
+        run: earthly +${{ matrix.target }}
 
       - name: Ensure 'earthly +compile-proto' changes are committed
         if: matrix.target == 'compile-proto'
