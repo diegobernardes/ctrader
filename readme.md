@@ -7,47 +7,7 @@ This repository contains a Go SDK to consume [cTrader OpenAPI](https://help.ctra
 - Earthly (optional).
 
 ## Usage
-```go
-func main() {
-  // Information needed to use the SDK.
-  var (
-    ctraderClientID  = ""
-    ctraderSecret    = ""
-    ctraderAccountID = 0
-    ctraderToken     = ""
-  )
-
-  // Handler for asynchronous events.
-  fn := func(msg proto.Message) {
-    fmt.Println(msg)
-  }
-
-  // Config and start the client.
-  c := Client{
-    Transport:    transport,
-    Live:         false,
-    ClientID:     ctraderClientID,
-    Secret:       ctraderSecret,
-    HandlerEvent: fn,
-    Deadline:     time.Second,
-  }
-  if err := c.Start(); err != nil {
-    panic(err)
-  }
-
-  // Authenticate the account.
-  if _, err = c.AccountAuth(context.Background(), ctraderAccountID, ctraderToken); err != nil {
-    panic(err)
-  }
-
-  // From this point on you can use the API.
-  resp, err := c.SymbolList(context.Background(), ctraderAccountID)
-  if err != nil {
-    panic(err)
-  }
-  fmt.Println(resp)
-}
-```
+Check the `_test.go` files.
 
 ## Testing
 ```shell

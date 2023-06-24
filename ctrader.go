@@ -1,6 +1,8 @@
 package ctrader
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -19,6 +21,22 @@ func (e undefinedProtobufResourceError[T]) Error() string {
 		return fmt.Sprintf("undefined request type '%s'", t.Elem())
 	}
 	return fmt.Sprintf("undefined payload type '%d'", t.Elem())
+}
+
+// Command is a helper function used to send a request and receive a response.
+func Command[A, B proto.Message](ctx context.Context, c *Client, req A) (B, error) {
+	resp, err := c.sendRequest(ctx, req)
+	if err != nil {
+		return *new(B), fmt.Errorf("failed to execute the request: %w", err)
+	}
+	switch v := resp.(type) {
+	case *openapi.ProtoOAErrorRes:
+		return *new(B), errors.New("failed authenticate the account")
+	case B:
+		return v, nil
+	default:
+		return *new(B), fmt.Errorf("unexpected response type '%s'", reflect.TypeOf(resp).Kind().String())
+	}
 }
 
 func mappingResponse(payloadType uint32) (proto.Message, error) {

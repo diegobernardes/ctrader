@@ -2,7 +2,6 @@ package ctrader
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 	"sync/atomic"
@@ -68,7 +67,53 @@ func (c *Client) Stop() error {
 	return nil
 }
 
-func (c *Client) SendRequest(ctx context.Context, req proto.Message) (proto.Message, error) {
+func (c *Client) handlerMessage(payload []byte) {
+	var msg openapi.ProtoMessage
+	if err := proto.Unmarshal(payload, &msg); err != nil {
+		c.Logger.Error("failed to unmarshal message", "error", err)
+		return
+	}
+	if msg.ClientMsgId == nil {
+		message, err := mappingResponse(*msg.PayloadType)
+		if err != nil {
+			c.Logger.Error("unknow message type", "error", err)
+			return
+		}
+		if err = proto.Unmarshal(msg.Payload, message); err != nil {
+			c.Logger.Error("failed to unmarshal payload", "error", err)
+			return
+		}
+		c.HandlerEvent(message)
+	} else {
+		c.requestRegistryMutex.Lock()
+		chanResponse, ok := c.requestRegistry[*msg.ClientMsgId]
+		c.requestRegistryMutex.Unlock()
+		if !ok {
+			c.Logger.Error("client message ID not found", "clientMessageID", *msg.ClientMsgId)
+			return
+		}
+		chanResponse <- &msg
+	}
+}
+
+func (c *Client) handlerError(err error) {
+	c.Logger.Error("Asynchronous error", "error", err.Error())
+	for {
+		if err = c.Stop(); err != nil {
+			c.Logger.Error("failed to stop the client", "error", err.Error())
+			time.Sleep(time.Second)
+			continue
+		}
+		if err = c.Start(); err != nil {
+			c.Logger.Error("failed to start the client", "error", err.Error())
+			time.Sleep(time.Second)
+			continue
+		}
+		break
+	}
+}
+
+func (c *Client) sendRequest(ctx context.Context, req proto.Message) (proto.Message, error) {
 	payloadType, err := mappingPayloadType(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the payload type: %w", err)
@@ -116,7 +161,7 @@ func (c *Client) SendRequest(ctx context.Context, req proto.Message) (proto.Mess
 	}
 }
 
-func (c *Client) SendEvent(_ context.Context, e proto.Message) error {
+func (c *Client) sendEvent(_ context.Context, e proto.Message) error {
 	payload, err := proto.Marshal(e)
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)
@@ -127,131 +172,16 @@ func (c *Client) SendEvent(_ context.Context, e proto.Message) error {
 	return nil
 }
 
-func (c *Client) AccountAuth(
-	ctx context.Context, accountIDRaw int, token string,
-) (*openapi.ProtoOAAccountAuthRes, error) {
-	accountID := int64(accountIDRaw)
-	req := &openapi.ProtoOAAccountAuthReq{
-		AccessToken:         &token,
-		CtidTraderAccountId: &accountID,
-	}
-	resp, err := c.SendRequest(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute the request: %w", err)
-	}
-	switch v := resp.(type) {
-	case *openapi.ProtoOAErrorRes:
-		return nil, errors.New("failed authenticate the account")
-	case *openapi.ProtoOAAccountAuthRes:
-		return v, nil
-	default:
-		return nil, errors.New("unexpected response type")
-	}
-}
-
-func (c *Client) SymbolList(ctx context.Context, accountIDRaw int) (*openapi.ProtoOASymbolsListRes, error) {
-	accountID := int64(accountIDRaw)
-	req := &openapi.ProtoOASymbolsListReq{
-		CtidTraderAccountId: &accountID,
-	}
-	resp, err := c.SendRequest(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute the request: %w", err)
-	}
-	switch v := resp.(type) {
-	case *openapi.ProtoOAErrorRes:
-		return nil, errors.New("failed to fetch the symbol list")
-	case *openapi.ProtoOASymbolsListRes:
-		return v, nil
-	default:
-		return nil, errors.New("unexpected response type")
-	}
-}
-
-func (c *Client) Subscribe(
-	ctx context.Context, accountIDRaw int, symbols []int64,
-) (*openapi.ProtoOASubscribeSpotsRes, error) {
-	accountID := int64(accountIDRaw)
-	req := &openapi.ProtoOASubscribeSpotsReq{
-		CtidTraderAccountId: &accountID,
-		SymbolId:            symbols,
-	}
-	resp, err := c.SendRequest(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute the request: %w", err)
-	}
-	switch v := resp.(type) {
-	case *openapi.ProtoOAErrorRes:
-		return nil, errors.New("failed to subscribe")
-	case *openapi.ProtoOASubscribeSpotsRes:
-		return v, nil
-	default:
-		return nil, errors.New("unexpected response type")
-	}
-}
-
-func (c *Client) Version(ctx context.Context) (*openapi.ProtoOAVersionRes, error) {
-	req := &openapi.ProtoOAVersionReq{}
-	resp, err := c.SendRequest(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute the request: %w", err)
-	}
-	switch v := resp.(type) {
-	case *openapi.ProtoOAErrorRes:
-		return nil, errors.New("failed to fetch the version")
-	case *openapi.ProtoOAVersionRes:
-		return v, nil
-	default:
-		return nil, errors.New("unexpected response type")
-	}
-}
-
 func (c *Client) applicationAuthorization(ctx context.Context) error {
 	req := &openapi.ProtoOAApplicationAuthReq{
 		ClientId:     &c.ApplicationClientID,
 		ClientSecret: &c.ApplicationSecret,
 	}
-	resp, err := c.SendRequest(ctx, req)
+	_, err := Command[*openapi.ProtoOAApplicationAuthReq, *openapi.ProtoOAApplicationAuthRes](ctx, c, req)
 	if err != nil {
 		return fmt.Errorf("failed to send the message: %w", err)
 	}
-	switch resp.(type) {
-	case *openapi.ProtoOAErrorRes:
-		return errors.New("failed to authorize an application")
-	case *openapi.ProtoOAApplicationAuthRes:
-		return nil
-	default:
-		return errors.New("unexpected response type")
-	}
-}
-
-func (c *Client) handlerMessage(payload []byte) {
-	var msg openapi.ProtoMessage
-	if err := proto.Unmarshal(payload, &msg); err != nil {
-		c.Logger.Error("failed to unmarshal message", "error", err)
-		return
-	}
-	if msg.ClientMsgId == nil {
-		message, err := mappingResponse(*msg.PayloadType)
-		if err != nil {
-			c.Logger.Error("unknow message type", "error", err)
-			return
-		}
-		if err = proto.Unmarshal(msg.Payload, message); err != nil {
-			c.Logger.Error("failed to unmarshal payload", "error", err)
-			return
-		}
-		c.HandlerEvent(message)
-	} else {
-		c.requestRegistryMutex.Lock()
-		chanResponse, ok := c.requestRegistry[*msg.ClientMsgId]
-		c.requestRegistryMutex.Unlock()
-		if !ok {
-			c.Logger.Error("client message ID not found", "clientMessageID", *msg.ClientMsgId)
-			return
-		}
-		chanResponse <- &msg
-	}
+	return nil
 }
 
 func (c *Client) keepalive() {
@@ -271,26 +201,9 @@ func (c *Client) keepalive() {
 			if c.stopSignal.Load() {
 				return
 			}
-			if err := c.SendEvent(context.Background(), &req); err != nil {
+			if err := c.sendEvent(context.Background(), &req); err != nil {
 				c.handlerError(fmt.Errorf("failed to send the heartbeat event: %w", err))
 			}
 		}
 	}()
-}
-
-func (c *Client) handlerError(err error) {
-	c.Logger.Error("Asynchronous error", "error", err.Error())
-	for {
-		if err = c.Stop(); err != nil {
-			c.Logger.Error("failed to stop the client", "error", err.Error())
-			time.Sleep(time.Second)
-			continue
-		}
-		if err = c.Start(); err != nil {
-			c.Logger.Error("failed to start the client", "error", err.Error())
-			time.Sleep(time.Second)
-			continue
-		}
-		break
-	}
 }
