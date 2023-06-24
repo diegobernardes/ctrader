@@ -1,7 +1,7 @@
-VERSION 0.6
+VERSION 0.7
 
-ARG GO_IMAGE=golang:1.20-bookworm
-ARG WORKDIR=/opt/ctrader
+ARG --global BASE_IMAGE=golang:1.20-bookworm
+ARG --global WORKDIR=/opt/ctrader
 
 configure:
   LOCALLY
@@ -34,7 +34,7 @@ go-linter:
   RUN golangci-lint run ./...
 
 go-mod-linter:
-  FROM $GO_IMAGE
+  FROM $BASE_IMAGE
   WORKDIR $WORKDIR
   COPY . .
   RUN git checkout Earthfile \
@@ -43,14 +43,14 @@ go-mod-linter:
     && git diff --cached --exit-code
 
 go-base:
-  FROM $GO_IMAGE
+  FROM $BASE_IMAGE
   WORKDIR $WORKDIR
   COPY --dir openapi .
   COPY go.mod go.sum *.go .
   RUN go mod download
 
 update-pkg-go-dev:
-  FROM $GO_IMAGE
+  FROM $BASE_IMAGE
   RUN curl https://proxy.golang.org/github.com/diegobernardes/ctrader/@v/main.info
 
 # compile-proto is used to compile cTrader Open API protobuf files. In case the 'protoc-gen-go' version changes, it's
@@ -58,7 +58,7 @@ update-pkg-go-dev:
 compile-proto:
   LOCALLY 
   RUN rm -rf openapi
-  FROM $GO_IMAGE
+  FROM $BASE_IMAGE
   RUN apt-get update \
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
