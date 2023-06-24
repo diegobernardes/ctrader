@@ -1,13 +1,23 @@
 VERSION 0.7
 
 ARG --global BASE_IMAGE=golang:1.20-bookworm
-ARG --global WORKDIR=/opt/ctrader
+FROM $BASE_IMAGE
+WORKDIR /opt/ctrader
 
 configure:
   LOCALLY
   RUN git config pull.rebase true \
     && git config remote.origin.prune true \
     && git config branch.main.mergeoptions "--ff-only"
+
+go-base:
+  COPY --dir openapi .
+  COPY go.mod go.sum *.go .
+  RUN go mod download
+
+go-build:
+  FROM +go-base
+  RUN go build -trimpath ./...
 
 go-test:
   ARG INTEGRATION_TEST="false"
@@ -20,37 +30,23 @@ go-test:
     RUN go test -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
   END
 
-go-build:
-  FROM +go-base
-  RUN go build -trimpath ./...
-
 go-linter:
   FROM +go-base
-  WORKDIR $WORKDIR
   RUN go install golang.org/x/vuln/cmd/govulncheck@latest \
     && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
   COPY .golangci.yaml .
-  RUN govulncheck ./...
-  RUN golangci-lint run ./...
+  RUN govulncheck ./... \
+    && golangci-lint run ./...
 
 go-mod-linter:
-  FROM $BASE_IMAGE
-  WORKDIR $WORKDIR
+  FROM +go-base
   COPY . .
   RUN git checkout Earthfile \
     && go mod tidy \
     && git add . \
     && git diff --cached --exit-code
 
-go-base:
-  FROM $BASE_IMAGE
-  WORKDIR $WORKDIR
-  COPY --dir openapi .
-  COPY go.mod go.sum *.go .
-  RUN go mod download
-
 update-pkg-go-dev:
-  FROM $BASE_IMAGE
   RUN curl https://proxy.golang.org/github.com/diegobernardes/ctrader/@v/main.info
 
 # compile-proto is used to compile cTrader Open API protobuf files. In case the 'protoc-gen-go' version changes, it's
@@ -63,8 +59,8 @@ compile-proto:
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
     && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.30.0
-  RUN git clone --depth 1 --branch 86 https://github.com/spotware/openapi-proto-messages.git \
-    && cd openapi-proto-messages \
+  GIT CLONE --branch 86 https://github.com/spotware/openapi-proto-messages.git openapi-proto-messages
+  RUN cd openapi-proto-messages \
     && protoc --go_out=. --go_opt=paths=source_relative *.proto \
     && find . ! \( -name '*.go' \) -delete
   SAVE ARTIFACT openapi-proto-messages AS LOCAL openapi
