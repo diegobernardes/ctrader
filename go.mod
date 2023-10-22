@@ -1,12 +1,12 @@
 module github.com/diegobernardes/ctrader
 
-go 1.20
+go 1.21
 
 require (
 	github.com/samber/lo v1.38.1
 	github.com/satori/uuid v1.2.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	google.golang.org/protobuf v1.31.0
 )
 

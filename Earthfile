@@ -1,6 +1,6 @@
 VERSION 0.7
 
-ARG --global BASE_IMAGE=golang:1.20-bookworm
+ARG --global BASE_IMAGE=golang:1.21-bookworm
 FROM $BASE_IMAGE
 WORKDIR /opt/ctrader
 
@@ -22,7 +22,7 @@ go-build:
 go-test:
   ARG INTEGRATION_TEST="false"
   FROM +go-base
-  RUN go install github.com/mfridman/tparse@v0.12.2
+  RUN go install github.com/mfridman/tparse@v0.13.1
   IF [ "$INTEGRATION_TEST" = "true" ]
     RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
       go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
@@ -32,8 +32,8 @@ go-test:
 
 go-linter:
   FROM +go-base
-  RUN go install golang.org/x/vuln/cmd/govulncheck@latest \
-    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+  RUN go install golang.org/x/vuln/cmd/govulncheck@v1.0.1 \
+    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.0
   COPY .golangci.yaml .
   RUN govulncheck ./... \
     && golangci-lint run ./...
@@ -58,7 +58,7 @@ compile-proto:
   RUN apt-get update \
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
-    && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.30.0
+    && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.31.0
   GIT CLONE --branch 86 https://github.com/spotware/openapi-proto-messages.git openapi-proto-messages
   RUN cd openapi-proto-messages \
     && protoc --go_out=. --go_opt=paths=source_relative *.proto \
