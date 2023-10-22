@@ -52,9 +52,6 @@ linters:
     - unparam
     - wastedassign
     - wrapcheck
-    - testifylint
-    - protogetter
-    - perfsprint
 
 linters-settings:
   errcheck:
