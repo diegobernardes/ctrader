@@ -37,7 +37,7 @@ func TestClientIntegration(t *testing.T) {
 	}
 	r2, err := Command[*openapi.ProtoOAAccountAuthReq, *openapi.ProtoOAAccountAuthRes](context.Background(), c, req)
 	require.NoError(t, err)
-	require.Equal(t, ctraderAccountID, int(*r2.CtidTraderAccountId))
+	require.Equal(t, ctraderAccountID, int(r2.GetCtidTraderAccountId()))
 
 	reqSymbolList := &openapi.ProtoOASymbolsListReq{
 		CtidTraderAccountId: lo.ToPtr(int64(ctraderAccountID)),
@@ -46,8 +46,8 @@ func TestClientIntegration(t *testing.T) {
 		context.Background(), c, reqSymbolList,
 	)
 	require.NoError(t, errSymbolList)
-	_, ok := lo.Find(respSymbolList.Symbol, func(s *openapi.ProtoOALightSymbol) bool {
-		return *s.SymbolName == "EURUSD"
+	_, ok := lo.Find(respSymbolList.GetSymbol(), func(s *openapi.ProtoOALightSymbol) bool {
+		return s.GetSymbolName() == "EURUSD"
 	})
 	require.True(t, ok)
 	require.NoError(t, c.Stop())

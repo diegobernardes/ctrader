@@ -22,7 +22,7 @@ type mockClient struct {
 func (m *mockClient) send(payload []byte) error {
 	var msg openapi.ProtoMessage
 	require.NoError(m.t, proto.Unmarshal(payload, &msg))
-	require.Equal(m.t, *msg.PayloadType, uint32(openapi.ProtoPayloadType_HEARTBEAT_EVENT))
+	require.Equal(m.t, msg.GetPayloadType(), uint32(openapi.ProtoPayloadType_HEARTBEAT_EVENT))
 	m.count.Add(1)
 	return nil
 }
@@ -33,8 +33,8 @@ func TestClientKeepAlive(t *testing.T) {
 	c := Client{transport: &mc}
 	c.keepalive()
 	time.Sleep(21 * time.Second)
-	require.Equal(t, mc.count.Load(), int64(2))
+	require.Equal(t, int64(2), mc.count.Load())
 	c.stopSignal.Store(true)
 	time.Sleep(11 * time.Second)
-	require.Equal(t, mc.count.Load(), int64(2))
+	require.Equal(t, int64(2), mc.count.Load())
 }
