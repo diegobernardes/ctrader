@@ -73,23 +73,23 @@ func (c *Client) handlerMessage(payload []byte) {
 		c.Logger.Error("failed to unmarshal message", "error", err)
 		return
 	}
-	if msg.ClientMsgId == nil {
-		message, err := mappingResponse(*msg.PayloadType)
+	if msg.GetClientMsgId() == "" {
+		message, err := mappingResponse(msg.GetPayloadType())
 		if err != nil {
 			c.Logger.Error("unknow message type", "error", err)
 			return
 		}
-		if err = proto.Unmarshal(msg.Payload, message); err != nil {
+		if err = proto.Unmarshal(msg.GetPayload(), message); err != nil {
 			c.Logger.Error("failed to unmarshal payload", "error", err)
 			return
 		}
 		c.HandlerEvent(message)
 	} else {
 		c.requestRegistryMutex.Lock()
-		chanResponse, ok := c.requestRegistry[*msg.ClientMsgId]
+		chanResponse, ok := c.requestRegistry[msg.GetClientMsgId()]
 		c.requestRegistryMutex.Unlock()
 		if !ok {
-			c.Logger.Error("client message ID not found", "clientMessageID", *msg.ClientMsgId)
+			c.Logger.Error("client message ID not found", "clientMessageID", msg.GetClientMsgId())
 			return
 		}
 		chanResponse <- &msg
@@ -150,11 +150,11 @@ func (c *Client) sendRequest(ctx context.Context, req proto.Message) (proto.Mess
 	case <-ctx.Done():
 		return nil, fmt.Errorf("context error: %w", ctx.Err())
 	case messageBase := <-chanResponse:
-		message, errMessage := mappingResponse(*messageBase.PayloadType)
+		message, errMessage := mappingResponse(messageBase.GetPayloadType())
 		if errMessage != nil {
 			return nil, fmt.Errorf("failed to get the response type: %w", errMessage)
 		}
-		if err = proto.Unmarshal(messageBase.Payload, message); err != nil {
+		if err = proto.Unmarshal(messageBase.GetPayload(), message); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal the response: %w", err)
 		}
 		return message, nil

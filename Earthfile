@@ -33,7 +33,7 @@ go-test:
 go-linter:
   FROM +go-base
   RUN go install golang.org/x/vuln/cmd/govulncheck@v1.0.1 \
-    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.0
+    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
   COPY .golangci.yaml .
   RUN govulncheck ./... \
     && golangci-lint run ./...
