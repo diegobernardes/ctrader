@@ -96,7 +96,7 @@ const (
 	ProtoErrorCode_FRAME_TOO_LONG          ProtoErrorCode = 8  // Message is too large.
 	ProtoErrorCode_MARKET_CLOSED           ProtoErrorCode = 9  // Market is closed.
 	ProtoErrorCode_CONCURRENT_MODIFICATION ProtoErrorCode = 10 // Order is blocked (e.g. under execution) and change cannot be applied.
-	ProtoErrorCode_BLOCKED_PAYLOAD_TYPE    ProtoErrorCode = 11 // Message is blocked by server.
+	ProtoErrorCode_BLOCKED_PAYLOAD_TYPE    ProtoErrorCode = 11 // Message is blocked by server or rate limit is reached.
 )
 
 // Enum value maps for ProtoErrorCode.
