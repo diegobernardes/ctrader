@@ -140,6 +140,8 @@ func mappingResponse(payloadType uint32) (proto.Message, error) {
 		response = &openapi.ProtoOAGetDynamicLeverageByIDRes{}
 	case uint32(openapi.ProtoOAPayloadType_PROTO_OA_DEAL_LIST_BY_POSITION_ID_RES):
 		response = &openapi.ProtoOADealListByPositionIdRes{}
+	case uint32(openapi.ProtoOAPayloadType_PROTO_OA_GET_POSITION_UNREALIZED_PNL_RES):
+		response = &openapi.ProtoOAGetPositionUnrealizedPnLRes{}
 	default:
 		return nil, undefinedProtobufResourceError[uint32]{Value: payloadType}
 	}
@@ -226,6 +228,8 @@ func mappingPayloadType(t proto.Message) (openapi.ProtoOAPayloadType, error) {
 		return openapi.ProtoOAPayloadType_PROTO_OA_ORDER_LIST_BY_POSITION_ID_REQ, nil
 	case *openapi.ProtoOADealOffsetListReq:
 		return openapi.ProtoOAPayloadType_PROTO_OA_DEAL_OFFSET_LIST_REQ, nil
+	case *openapi.ProtoOAGetPositionUnrealizedPnLReq:
+		return openapi.ProtoOAPayloadType_PROTO_OA_GET_POSITION_UNREALIZED_PNL_REQ, nil
 	default:
 		return 0, undefinedProtobufResourceError[string]{Value: reflect.TypeOf(t).String()}
 	}

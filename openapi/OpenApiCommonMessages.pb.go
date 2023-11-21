@@ -20,14 +20,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// * Base message that is used for all messages that are sent to/from Open API proxy of cTrader platform.
 type ProtoMessage struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PayloadType *uint32 `protobuf:"varint,1,req,name=payloadType" json:"payloadType,omitempty"` // Contains id of ProtoPayloadType or other custom PayloadTypes (e.g. ProtoOAPayloadType)
-	Payload     []byte  `protobuf:"bytes,2,opt,name=payload" json:"payload,omitempty"`          // Serialized protobuf message that corresponds to payloadType
-	ClientMsgId *string `protobuf:"bytes,3,opt,name=clientMsgId" json:"clientMsgId,omitempty"`  // Request message id, assigned by the client that will be returned in the response
+	PayloadType *uint32 `protobuf:"varint,1,req,name=payloadType" json:"payloadType,omitempty"` // Contains id of ProtoPayloadType or other custom PayloadTypes (e.g. ProtoOAPayloadType).
+	Payload     []byte  `protobuf:"bytes,2,opt,name=payload" json:"payload,omitempty"`          // Serialized protobuf message that corresponds to payloadType.
+	ClientMsgId *string `protobuf:"bytes,3,opt,name=clientMsgId" json:"clientMsgId,omitempty"`  // Request message id, assigned by the client that will be returned in the response.
 }
 
 func (x *ProtoMessage) Reset() {
@@ -83,15 +84,16 @@ func (x *ProtoMessage) GetClientMsgId() string {
 	return ""
 }
 
+// * Error response that is sent from Open API proxy when error occurs.
 type ProtoErrorRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	PayloadType             *ProtoPayloadType `protobuf:"varint,1,opt,name=payloadType,enum=ProtoPayloadType,def=50" json:"payloadType,omitempty"`
-	ErrorCode               *string           `protobuf:"bytes,2,req,name=errorCode" json:"errorCode,omitempty"`                              // Contains name of ProtoErrorCode or other custom ErrorCodes (e.g. ProtoCHErrorCode)
-	Description             *string           `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`                          // Error description
-	MaintenanceEndTimestamp *uint64           `protobuf:"varint,4,opt,name=maintenanceEndTimestamp" json:"maintenanceEndTimestamp,omitempty"` // CS-10489 Epoch timestamp in second
+	ErrorCode               *string           `protobuf:"bytes,2,req,name=errorCode" json:"errorCode,omitempty"`                              // Contains name of ProtoErrorCode or other custom ErrorCodes (e.g. ProtoCHErrorCode).
+	Description             *string           `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`                          // Error description.
+	MaintenanceEndTimestamp *uint64           `protobuf:"varint,4,opt,name=maintenanceEndTimestamp" json:"maintenanceEndTimestamp,omitempty"` // The Unix time in milliseconds of the end of the maintenance.
 }
 
 // Default values for ProtoErrorRes fields.
@@ -159,7 +161,7 @@ func (x *ProtoErrorRes) GetMaintenanceEndTimestamp() uint64 {
 	return 0
 }
 
-// * Event that is sent from Open API proxy and can be used as criteria that connection is healthy when no other messages are sent by cTrader platform. Open API client can send this message when he needs to keep the connection open for a period without other messages longer than 30 seconds
+// * Event that is sent from Open API proxy and can be used as criteria that connection is healthy when no other messages are sent by cTrader platform. Open API client can send this message when he needs to keep the connection open for a period without other messages longer than 30 seconds.
 type ProtoHeartbeatEvent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
