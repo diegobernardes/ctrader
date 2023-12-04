@@ -3,7 +3,7 @@ module github.com/diegobernardes/ctrader
 go 1.21
 
 require (
-	github.com/samber/lo v1.38.1
+	github.com/samber/lo v1.39.0
 	github.com/satori/uuid v1.2.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
