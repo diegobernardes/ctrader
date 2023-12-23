@@ -22,7 +22,7 @@ go-build:
 go-test:
   ARG INTEGRATION_TEST="false"
   FROM +go-base
-  RUN go install github.com/mfridman/tparse@v0.13.1
+  RUN go install github.com/mfridman/tparse@v0.13.2
   IF [ "$INTEGRATION_TEST" = "true" ]
     RUN --secret CTRADER_CLIENT_ID --secret CTRADER_SECRET --secret CTRADER_ACCOUNT_ID --secret CTRADER_TOKEN \
       go test --tags integration -trimpath -race -cover -covermode=atomic -json ./... | tparse -all -smallscreen
@@ -58,7 +58,7 @@ compile-proto:
   RUN apt-get update \
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
-    && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.31.0
+    && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
   GIT CLONE --branch 88 https://github.com/spotware/openapi-proto-messages.git openapi-proto-messages
   RUN cd openapi-proto-messages \
     && protoc --go_out=. --go_opt=paths=source_relative *.proto \

@@ -6,8 +6,8 @@ require (
 	github.com/samber/lo v1.39.0
 	github.com/satori/uuid v1.2.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
-	google.golang.org/protobuf v1.31.0
+	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
+	google.golang.org/protobuf v1.32.0
 )
 
 require (
