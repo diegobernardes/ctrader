@@ -3,7 +3,7 @@ This repository contains a Go SDK to consume [cTrader OpenAPI](https://help.ctra
 <img src="docs/gopher.svg" align="right" height="204px" width="200px" />
 
 ## Requirements
-- Go 1.20 or higher.
+- Go 1.21 or higher.
 - Earthly (optional).
 
 ## Usage
