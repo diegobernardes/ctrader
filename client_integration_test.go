@@ -6,7 +6,6 @@ import (
 	"context"
 	"os"
 	"strconv"
-	"sync"
 	"testing"
 	"time"
 
@@ -40,22 +39,16 @@ func TestClientIntegration(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, ctraderAccountID, int(*r2.CtidTraderAccountId))
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		reqSymbolList := &openapi.ProtoOASymbolsListReq{
-			CtidTraderAccountId: lo.ToPtr(int64(ctraderAccountID)),
-		}
-		respSymbolList, errSymbolList := Command[*openapi.ProtoOASymbolsListReq, *openapi.ProtoOASymbolsListRes](
-			context.Background(), c, reqSymbolList,
-		)
-		require.NoError(t, errSymbolList)
-		_, ok := lo.Find(respSymbolList.Symbol, func(s *openapi.ProtoOALightSymbol) bool {
-			return *s.SymbolName == "EURUSD"
-		})
-		require.True(t, ok)
-	}()
-	wg.Wait()
+	reqSymbolList := &openapi.ProtoOASymbolsListReq{
+		CtidTraderAccountId: lo.ToPtr(int64(ctraderAccountID)),
+	}
+	respSymbolList, errSymbolList := Command[*openapi.ProtoOASymbolsListReq, *openapi.ProtoOASymbolsListRes](
+		context.Background(), c, reqSymbolList,
+	)
+	require.NoError(t, errSymbolList)
+	_, ok := lo.Find(respSymbolList.Symbol, func(s *openapi.ProtoOALightSymbol) bool {
+		return *s.SymbolName == "EURUSD"
+	})
+	require.True(t, ok)
 	require.NoError(t, c.Stop())
 }
