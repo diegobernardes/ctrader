@@ -1,6 +1,6 @@
 VERSION 0.7
 
-ARG --global BASE_IMAGE=golang:1.21-bookworm
+ARG --global BASE_IMAGE=golang:1.22-bookworm
 FROM $BASE_IMAGE
 WORKDIR /opt/ctrader
 
