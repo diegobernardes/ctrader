@@ -1,4 +1,4 @@
-VERSION 0.7
+VERSION 0.8
 
 ARG --global BASE_IMAGE=golang:1.22-bookworm
 FROM $BASE_IMAGE
@@ -32,8 +32,8 @@ go-test:
 
 go-linter:
   FROM +go-base
-  RUN go install golang.org/x/vuln/cmd/govulncheck@v1.0.1 \
-    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+  RUN go install golang.org/x/vuln/cmd/govulncheck@v1.0.4 \
+    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.1
   COPY .golangci.yaml .
   RUN govulncheck ./... \
     && golangci-lint run ./...
@@ -52,7 +52,7 @@ update-pkg-go-dev:
 # compile-proto is used to compile cTrader Open API protobuf files. In case the 'protoc-gen-go' version changes, it's
 # recommended to run 'go mod tidy'.
 compile-proto:
-  LOCALLY 
+  LOCALLY
   RUN rm -rf openapi
   FROM $BASE_IMAGE
   RUN apt-get update \
