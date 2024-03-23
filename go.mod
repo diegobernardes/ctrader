@@ -1,6 +1,6 @@
 module github.com/diegobernardes/ctrader
 
-go 1.21
+go 1.22
 
 require (
 	github.com/samber/lo v1.39.0
