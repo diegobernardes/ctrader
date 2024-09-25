@@ -59,7 +59,7 @@ compile-proto:
     && apt-get install --yes --no-install-recommends protobuf-compiler=3.* \
     && rm -rf /var/lib/apt/lists/* \
     && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
-  GIT CLONE --branch 88 https://github.com/spotware/openapi-proto-messages.git openapi-proto-messages
+  GIT CLONE --branch 91 https://github.com/spotware/openapi-proto-messages.git openapi-proto-messages
   RUN cd openapi-proto-messages \
     && protoc --go_out=. --go_opt=paths=source_relative *.proto \
     && find . ! \( -name '*.go' \) -delete
