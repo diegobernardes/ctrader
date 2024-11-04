@@ -2,7 +2,6 @@ package ctrader
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"reflect"
 
@@ -23,6 +22,16 @@ func (e undefinedProtobufResourceError[T]) Error() string {
 	return fmt.Sprintf("undefined payload type '%d'", t.Elem())
 }
 
+type ProtoOAError struct {
+	ErrorCode               string
+	Description             string
+	MaintenanceEndTimestamp int64
+}
+
+func (e ProtoOAError) Error() string {
+	return fmt.Sprintf("%s: %s", e.ErrorCode, e.Description)
+}
+
 // Command is a helper function used to send a request and receive a response.
 //
 // nolint ireturn
@@ -33,7 +42,7 @@ func Command[A, B proto.Message](ctx context.Context, c *Client, req A) (B, erro
 	}
 	switch v := resp.(type) {
 	case *openapi.ProtoOAErrorRes:
-		return *new(B), errors.New("failed authenticate the account")
+		return *new(B), ProtoOAError{ErrorCode: v.GetErrorCode(), Description: v.GetDescription(), MaintenanceEndTimestamp: v.GetMaintenanceEndTimestamp()}
 	case B:
 		return v, nil
 	default:
