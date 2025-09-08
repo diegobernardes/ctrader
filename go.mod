@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/samber/lo v1.45.0
 	github.com/satori/uuid v1.2.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81
 	google.golang.org/protobuf v1.34.1
 )
